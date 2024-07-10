@@ -72,7 +72,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_ACTION_SECRET_ACCESS_KEY }}
           region: 'ap-northeast-2'
           application_name: 'suppin-dev'
-          environment_name: 'suppin-dev-env'
+          environment_name: 'Suppin-dev-env'
           version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
           deployment_package: 'deploy/deploy.zip'
           wait_for_deployment: false
