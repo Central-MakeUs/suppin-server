@@ -15,8 +15,8 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI suppinAPI() {
         Info info = new Info()
-                .title("suppin API")
-                .description("suppin API 명세서")
+                .title("Suppin API")
+                .description("Suppin API 명세서")
                 .version("1.0.0");
 
         String jwtSchemeName = "JWT TOKEN";
