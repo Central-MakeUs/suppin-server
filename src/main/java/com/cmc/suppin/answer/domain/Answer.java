@@ -1,5 +1,6 @@
 package com.cmc.suppin.answer.domain;
 
+import com.cmc.suppin.global.domain.BaseDateTimeEntity;
 import com.cmc.suppin.survey.domain.Question;
 
 import javax.persistence.*;
@@ -7,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Answer {
-    
+public class Answer extends BaseDateTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "answer_id")

@@ -2,13 +2,14 @@ package com.cmc.suppin.survey.domain;
 
 import com.cmc.suppin.answer.domain.AnonymousParticipant;
 import com.cmc.suppin.event.domain.Event;
+import com.cmc.suppin.global.domain.BaseDateTimeEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Survey {
+public class Survey extends BaseDateTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "survey_id")

@@ -1,13 +1,14 @@
 package com.cmc.suppin.member.domain;
 
 import com.cmc.suppin.event.domain.Event;
+import com.cmc.suppin.global.domain.BaseDateTimeEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Member {
+public class Member extends BaseDateTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
