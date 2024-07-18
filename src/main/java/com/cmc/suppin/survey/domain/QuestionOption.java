@@ -20,7 +20,7 @@ public class QuestionOption {
     @Column(columnDefinition = "VARCHAR(50)", nullable = false)
     private String optionText;
 
-    @OneToMany(mappedBy = "option")
+    @OneToMany(mappedBy = "questionOption")
     private List<AnswerOption> answerOptionList = new ArrayList<>();
 
 }

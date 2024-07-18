@@ -12,11 +12,11 @@ public class AnswerOption {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "answer_id")
+    @JoinColumn(name = "answer_id", nullable = false)
     private Answer answer;
 
     @ManyToOne
-    @JoinColumn(name = "option_id")
+    @JoinColumn(name = "question_option_id", nullable = false)
     private QuestionOption questionOption;
 }
 
