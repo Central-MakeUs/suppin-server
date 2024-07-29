@@ -33,6 +33,12 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             throw new IllegalArgumentException("이미 존재하는 유저입니다.");
         }
 
+        // 비밀번호 조건 검증
+        String password = request.getPassword();
+        if (!isValidPassword(password)) {
+            throw new IllegalArgumentException("비밀번호는 8~20자 영문, 숫자, 특수문자를 사용해야 합니다.");
+        }
+
         // DTO를 Entity로 변환
         Member member = memberConverter.toEntity(request, bCryptPasswordEncoder);
 
@@ -40,6 +46,11 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         memberRepository.save(member);
 
         return member;
+    }
+
+    // 비밀번호 조건 검증 메서드
+    private boolean isValidPassword(String password) {
+        return password.matches("(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,20}");
     }
 
     /**
