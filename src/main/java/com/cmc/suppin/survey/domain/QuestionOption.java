@@ -1,8 +1,8 @@
 package com.cmc.suppin.survey.domain;
 
 import com.cmc.suppin.answer.domain.AnswerOption;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 

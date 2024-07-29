@@ -5,8 +5,8 @@ import com.cmc.suppin.global.domain.BaseDateTimeEntity;
 import com.cmc.suppin.global.enums.EventType;
 import com.cmc.suppin.member.domain.Member;
 import com.cmc.suppin.survey.domain.Survey;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

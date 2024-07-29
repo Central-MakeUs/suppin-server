@@ -2,8 +2,8 @@ package com.cmc.suppin.answer.domain;
 
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
 import com.cmc.suppin.survey.domain.Survey;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 

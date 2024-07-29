@@ -2,8 +2,8 @@ package com.cmc.suppin.comment.domain;
 
 import com.cmc.suppin.event.domain.Event;
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 
 @Entity
 public class Comment extends BaseDateTimeEntity {
