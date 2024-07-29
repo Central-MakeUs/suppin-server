@@ -55,10 +55,8 @@ public class JWTFilter extends OncePerRequestFilter {
         String role = jwtUtil.getRole(token);
 
         // Member Entity를 생성하여 값 set
-        Member member = new Member();
-        member.setName(username);
-        member.setPassword("tempPassword");
-        member.setRole(role);
+        Member member = new Member(username, "tempPassword", "tempEmail", "tempPhoneNumber", role);
+
 
         //MemberDetails에 회원 정보 객체 담기
         MemberDetails customUserDetails = new MemberDetails(member);
