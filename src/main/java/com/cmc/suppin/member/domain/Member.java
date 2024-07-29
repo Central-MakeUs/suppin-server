@@ -41,5 +41,13 @@ public class Member extends BaseDateTimeEntity {
 
     private String role;
 
+    // 추가된 생성자
+    public Member(String name, String password, String email, String phoneNumber, String role) {
+        this.name = name;
+        this.password = password;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+    }
 }
 
