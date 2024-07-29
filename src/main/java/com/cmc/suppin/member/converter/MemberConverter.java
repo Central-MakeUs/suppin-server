@@ -6,6 +6,8 @@ import com.cmc.suppin.member.domain.Member;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 public class MemberConverter {
 
@@ -25,7 +27,7 @@ public class MemberConverter {
                 .userId(member.getUserId())
                 .name(member.getName())
                 .email(member.getEmail())
-                .createdAt(member.getCreatedAt())
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
