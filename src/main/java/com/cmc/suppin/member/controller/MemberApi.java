@@ -1,5 +1,6 @@
 package com.cmc.suppin.member.controller;
 
+import com.cmc.suppin.global.exception.status.SuccessStatus;
 import com.cmc.suppin.global.presentation.ApiResponse;
 import com.cmc.suppin.member.controller.dto.MemberRequestDTO;
 import com.cmc.suppin.member.controller.dto.MemberResponseDTO;
@@ -12,7 +13,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
@@ -30,15 +34,15 @@ public class MemberApi {
     public ApiResponse<MemberResponseDTO.JoinResultDTO> join(@RequestBody @Valid MemberRequestDTO.JoinDTO request) {
         Member member = memberCommandService.join(request);
 
-        return ApiResponse.onSuccess(MemberConverter.toJoinResultDTO(member));
+        return ApiResponse.onSuccess(MemberConverter.toJoinResultDTO(member), SuccessStatus.MEMBER_JOIN_SUCCESS);
 
     }
 
-    @GetMapping("/checkUserId")
+    @PostMapping("/checkUserId")
     @Operation(summary = "아이디 중복 체크 API", description = "request : userId, response: 중복이면 false, 중복 아니면 true")
     public ApiResponse<MemberResponseDTO.IdConfirmResultDTO> checkUserId(@RequestBody MemberRequestDTO.IdConfirmDTO request) {
         boolean checkUserId = memberCommandService.confirmUserId(request);
 
-        return ApiResponse.onSuccess(MemberConverter.toIdConfirmResultDTO(checkUserId));
+        return ApiResponse.onSuccess(MemberConverter.toIdConfirmResultDTO(checkUserId), SuccessStatus.MEMBER_ID_CONFIRM_SUCCESS);
     }
 }

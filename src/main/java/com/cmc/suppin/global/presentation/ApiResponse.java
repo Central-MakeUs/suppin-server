@@ -1,11 +1,11 @@
 package com.cmc.suppin.global.presentation;
 
+import com.cmc.suppin.global.exception.BaseCode;
+import com.cmc.suppin.global.exception.status.SuccessStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import com.cmc.suppin.global.exception.BaseCode;
-import com.cmc.suppin.global.exception.status.SuccessStatus;
 
 @Getter
 @AllArgsConstructor
@@ -21,6 +21,10 @@ public class ApiResponse<T> {
 
     public static <T> ApiResponse<T> onSuccess(T result) {
         return new ApiResponse<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), result);
+    }
+
+    public static <T> ApiResponse<T> onSuccess(T result, SuccessStatus successStatus) {
+        return new ApiResponse<>(true, successStatus.getCode(), successStatus.getMessage(), result);
     }
 
     public static <T> ApiResponse<T> of(BaseCode code, T result) {
