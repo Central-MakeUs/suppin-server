@@ -60,7 +60,7 @@ public class MemberApi {
     @Operation(summary = "로그인 API", description = "request : userId, password")
     public ApiResponse<MemberResponseDTO.LoginResponseDTO> login(@RequestBody @Valid MemberRequestDTO.LoginRequestDTO request) {
         MemberResponseDTO.LoginResponseDTO response = memberCommandService.login(request);
-        return ApiResponse.onSuccess(response);
+        return ApiResponse.onSuccess(response, SuccessStatus.MEMBER_LOGIN_SUCCESS);
     }
 
 }
