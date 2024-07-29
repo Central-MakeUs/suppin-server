@@ -28,4 +28,13 @@ public class MemberResponseDTO {
     public static class IdConfirmResultDTO {
         Boolean checkUserId;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class LoginResponseDTO {
+        private String token;
+        private String userId;
+    }
 }

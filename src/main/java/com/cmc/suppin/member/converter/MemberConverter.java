@@ -37,4 +37,10 @@ public class MemberConverter {
                 .build();
     }
 
+    public static MemberResponseDTO.LoginResponseDTO toLoginResponseDTO(String token, Member member) {
+        return MemberResponseDTO.LoginResponseDTO.builder()
+                .token(token)
+                .userId(member.getUserId())
+                .build();
+    }
 }

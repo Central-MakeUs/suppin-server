@@ -39,4 +39,12 @@ public class MemberRequestDTO {
     public static class IdConfirmDTO {
         private String userId;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LoginRequestDTO {
+        private String userId;
+        private String password;
+    }
 }

@@ -1,6 +1,8 @@
 package com.cmc.suppin.member.service.command;
 
+import com.cmc.suppin.global.security.jwt.JWTUtil;
 import com.cmc.suppin.member.controller.dto.MemberRequestDTO;
+import com.cmc.suppin.member.controller.dto.MemberResponseDTO;
 import com.cmc.suppin.member.converter.MemberConverter;
 import com.cmc.suppin.member.domain.Member;
 import com.cmc.suppin.member.domain.repository.MemberRepository;
@@ -19,6 +21,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final MemberConverter memberConverter;
+    private final JWTUtil jwtUtil;
 
     /**
      * 회원가입
@@ -47,4 +50,30 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         // 아이디 중복 체크
         return !memberRepository.existsByUserId(request.getUserId());
     }
+
+    /**
+     * 회원 탈퇴
+     */
+    @Override
+    public void deleteMember(String memberId) {
+        memberRepository.deleteByUserId(memberId);
+    }
+
+    /**
+     * 로그인
+     */
+    @Override
+    public MemberResponseDTO.LoginResponseDTO login(MemberRequestDTO.LoginRequestDTO request) {
+        Member member = memberRepository.findByUserId(request.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID or password"));
+
+        if (!bCryptPasswordEncoder.matches(request.getPassword(), member.getPassword())) {
+            throw new IllegalArgumentException("Invalid user ID or password");
+        }
+
+        String token = jwtUtil.createJwt(member.getUserId(), member.getRole(), 604800000L); // 1주일 유효 토큰
+        return MemberConverter.toLoginResponseDTO(token, member);
+    }
+
+
 }
