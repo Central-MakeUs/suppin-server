@@ -4,7 +4,9 @@ import com.cmc.suppin.member.controller.dto.MemberRequestDTO;
 import com.cmc.suppin.member.controller.dto.MemberResponseDTO;
 import com.cmc.suppin.member.domain.Member;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MemberConverter {
 
     public Member toEntity(MemberRequestDTO.JoinDTO request, BCryptPasswordEncoder encoder) {
