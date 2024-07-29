@@ -2,8 +2,8 @@ package com.cmc.suppin.answer.domain;
 
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
 import com.cmc.suppin.survey.domain.Survey;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +18,11 @@ public class AnonymousParticipant extends BaseDateTimeEntity {
     @JoinColumn(name = "survey_id")
     private Survey survey;
 
-    @Column(columnDefinition = "VARCHAR(255)", nullable = false)
-    private String sessionId;
+    @Column(columnDefinition = "VARCHAR(13)", nullable = false)
+    private String phoneNumber;
+
+    @Column(nullable = false)
+    private Boolean isAgreed;
 
     @OneToMany(mappedBy = "anonymousParticipant")
     private List<Answer> answerList = new ArrayList<>();

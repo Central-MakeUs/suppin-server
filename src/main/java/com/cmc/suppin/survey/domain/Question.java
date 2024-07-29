@@ -2,8 +2,8 @@ package com.cmc.suppin.survey.domain;
 
 import com.cmc.suppin.answer.domain.Answer;
 import com.cmc.suppin.global.enums.QuestionType;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -2,12 +2,19 @@ package com.cmc.suppin.member.domain;
 
 import com.cmc.suppin.event.domain.Event;
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
+@Builder
+@DynamicInsert
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Member extends BaseDateTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,11 +24,11 @@ public class Member extends BaseDateTimeEntity {
     @OneToMany(mappedBy = "member")
     private List<Event> eventList = new ArrayList<>();
 
+    @Column(columnDefinition = "VARCHAR(30)", nullable = false)
+    private String userId;
+
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private String name;
-
-    @Column(columnDefinition = "VARCHAR(30)", nullable = false)
-    private String nickname;
 
     @Column(columnDefinition = "VARCHAR(30)", nullable = false)
     private String email;
@@ -32,5 +39,15 @@ public class Member extends BaseDateTimeEntity {
     @Column(columnDefinition = "VARCHAR(13)", nullable = false)
     private String phoneNumber;
 
+    private String role;
+
+    // 추가된 생성자
+    public Member(String name, String password, String email, String phoneNumber, String role) {
+        this.name = name;
+        this.password = password;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+    }
 }
 

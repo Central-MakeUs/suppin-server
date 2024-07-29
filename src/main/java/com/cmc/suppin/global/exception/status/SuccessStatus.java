@@ -12,7 +12,10 @@ public enum SuccessStatus implements BaseCode {
     _OK(HttpStatus.OK, "COMMON200", "성공입니다."),
 
     //Member
-    MEMBER_DELETE_SUCCESS(HttpStatus.OK, "MEMBER2001", "회원 탈퇴 성공입니다."),
+    MEMBER_JOIN_SUCCESS(HttpStatus.OK, "MEMBER2000", "회원 가입 성공입니다."),
+    MEMBER_ID_CONFIRM_SUCCESS(HttpStatus.OK, "MEMBER2001", "아이디가 중복되지 않습니다."),
+    MEMBER_DELETE_SUCCESS(HttpStatus.OK, "MEMBER2002", "회원 탈퇴 성공입니다."),
+    MEMBER_LOGIN_SUCCESS(HttpStatus.OK, "MEMBER2003", "로그인 성공입니다."),
     ;
 
     private final HttpStatus httpStatus;

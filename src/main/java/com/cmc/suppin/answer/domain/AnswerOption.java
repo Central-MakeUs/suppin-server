@@ -1,8 +1,8 @@
 package com.cmc.suppin.answer.domain;
 
 import com.cmc.suppin.survey.domain.QuestionOption;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 
 @Entity
 public class AnswerOption {

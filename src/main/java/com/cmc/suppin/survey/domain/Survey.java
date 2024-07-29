@@ -3,8 +3,8 @@ package com.cmc.suppin.survey.domain;
 import com.cmc.suppin.answer.domain.AnonymousParticipant;
 import com.cmc.suppin.event.domain.Event;
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 

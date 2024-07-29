@@ -21,7 +21,7 @@ public enum ErrorStatus implements BaseErrorCode {
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "테스트"),
 
     // Member
-    MEMBER_NICKNAME_DUPLICATED(HttpStatus.BAD_REQUEST, "MEMBER4001", "중복된 닉네임 입니다."),
+    MEMBER_USERID_DUPLICATED(HttpStatus.BAD_REQUEST, "MEMBER4001", "중복된 아이디 입니다."),
     MEMBER_PASSWORD_ERROR(HttpStatus.BAD_REQUEST, "MEMBER4002", "비밀번호가 잘못되었습니다."),
 
     //JWT
