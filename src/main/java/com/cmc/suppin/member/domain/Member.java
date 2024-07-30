@@ -33,11 +33,13 @@ public class Member extends BaseDateTimeEntity {
     @Column(columnDefinition = "VARCHAR(30)", nullable = false)
     private String email;
 
-    @Column(columnDefinition = "VARCHAR(20)", nullable = false)
+    @Column(columnDefinition = "VARCHAR(255)", nullable = false)
     private String password;
 
     @Column(columnDefinition = "VARCHAR(13)", nullable = false)
     private String phoneNumber;
+
+    private Boolean termsAgree;
 
     private String role;
 
