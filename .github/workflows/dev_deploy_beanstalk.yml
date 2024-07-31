@@ -33,6 +33,9 @@ jobs:
           spring.datasource.url: ${{ secrets.DB_URL }}
           spring.datasource.username: ${{ secrets.DB_USER }}
           spring.datasource.password: ${{ secrets.DB_PASSWORD }}
+          spring.datasource.driver-class-name: ${{ secrets.DB_DRIVER }}
+          jwt.token.secret: ${{ secrets.JWT_TOKEN_SECRET }}
+          jwt.token.expiration: ${{ secrets.ACCESS_EXPIRY_SECONDS }}
 
       # gradlew 실행 권한 부여
       - name: Grant execute permission for gradlew
