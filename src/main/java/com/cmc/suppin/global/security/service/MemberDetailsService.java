@@ -34,6 +34,9 @@ public class MemberDetailsService implements UserDetailsService {
 
         List<GrantedAuthority> authorities = getAuthorities(member);
 
+        // 기본 ROLE_USER 권한 추가
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
         return UserDetailsImpl.builder()
                 .id(member.getId())
                 .userId(member.getUserId())
