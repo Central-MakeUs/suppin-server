@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.cmc.suppin.global.exception.MemberErrorCode.MEMBER_ALREADY_DELETED;
@@ -46,8 +47,10 @@ public class MemberDetailsService implements UserDetailsService {
     }
 
     private List<GrantedAuthority> getAuthorities(Member member) {
-        return member.getRole() != null ?
-                List.of(new SimpleGrantedAuthority(member.getRole().name()))
-                : null;
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        if (member.getRole() != null) {
+            authorities.add(new SimpleGrantedAuthority(member.getRole().name()));
+        }
+        return authorities;
     }
 }

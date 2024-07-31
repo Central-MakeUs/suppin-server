@@ -33,10 +33,10 @@ public class JwtTokenProvider {
     private static final String AUTHENTICATION_CLAIM_NAME = "roles";
     private static final String AUTHENTICATION_SCHEME = "Bearer ";
 
-    @Value("${jwt.secret-key}")
+    @Value("${JWT_SECRET_KEY}")
     private String secretKey;
 
-    @Value("${jwt.access-expiry-seconds}")
+    @Value("${ACCESS_EXPIRY_SECONDS}")
     private int accessExpirySeconds;
 
 //    @Value("${jwt.refresh-expiry-seconds}")

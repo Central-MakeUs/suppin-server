@@ -23,7 +23,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import java.util.List;
 
 import static com.cmc.suppin.global.enums.UserRole.ROLE_USER;
-import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
@@ -61,23 +60,6 @@ public class WebSecurityConfig {
                         .permitAll());
         return http.build();
     }
-
-    /*
-    @Bean
-    public SecurityFilterChain securityFilterChainOAuth(HttpSecurity http) throws Exception {
-        configureCommonSecuritySettings(http);
-        http
-                .securityMatchers(matchers -> matchers
-                        .requestMatchers(
-                                antMatcher("/login/**"),
-                                antMatcher("/login/oauth2/code/**")
-                        ))
-                .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest()
-                        .permitAll());
-        return http.build();
-    }
-    */
 
     /**
      * 인증 및 인가가 필요한 엔드포인트에 적용되는 SecurityFilterChain 입니다.
@@ -122,7 +104,7 @@ public class WebSecurityConfig {
 
     private RequestMatcher[] requestHasRoleUser() {
         List<RequestMatcher> requestMatchers = List.of(
-                antMatcher(DELETE, "/api/members"),
+                antMatcher("/api/v1/members/**"),
                 antMatcher(PATCH, "/api/members")
         );
         return requestMatchers.toArray(RequestMatcher[]::new);
@@ -134,12 +116,9 @@ public class WebSecurityConfig {
                 antMatcher("/swagger-ui/**"),
                 antMatcher("/actuator/**"),
                 antMatcher("/v3/api-docs/**"),
-                antMatcher("/ws/**"),
-                antMatcher("/from/**"),
-                antMatcher("/to/**"),
                 antMatcher("/api/v1/members/login/**"),
                 antMatcher("/api/v1/members/join"),
-                antMatcher("/api/sse")
+                antMatcher("/api/v1/survey/reply/**")
         );
         return requestMatchers.toArray(RequestMatcher[]::new);
     }
