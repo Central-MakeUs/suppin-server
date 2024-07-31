@@ -137,10 +137,8 @@ public class WebSecurityConfig {
                 antMatcher("/ws/**"),
                 antMatcher("/from/**"),
                 antMatcher("/to/**"),
-                antMatcher("/api/auth/login/**"),
-                antMatcher("/api/auth/reissue"),
-                antMatcher("/api/auth/guest"),
-                antMatcher("/api/members/join"),
+                antMatcher("/api/v1/members/login/**"),
+                antMatcher("/api/v1/members/join"),
                 antMatcher("/api/sse")
         );
         return requestMatchers.toArray(RequestMatcher[]::new);
