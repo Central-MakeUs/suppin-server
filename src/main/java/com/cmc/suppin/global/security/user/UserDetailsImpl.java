@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
 
 @Getter
 public class UserDetailsImpl implements UserDetails {
@@ -26,7 +27,7 @@ public class UserDetailsImpl implements UserDetails {
         this.id = id;
         this.userId = userId;
         this.password = password;
-        this.authorities = authorities;
+        this.authorities = authorities != null ? authorities : Collections.emptyList();
     }
 
     public String getAuthority() {
@@ -35,7 +36,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return authorities != null ? authorities : Collections.emptyList();
     }
 
     @Override
