@@ -2,6 +2,8 @@ package com.cmc.suppin.member.domain;
 
 import com.cmc.suppin.event.domain.Event;
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
+import com.cmc.suppin.global.enums.UserRole;
+import com.cmc.suppin.global.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -41,15 +43,27 @@ public class Member extends BaseDateTimeEntity {
 
     private Boolean termsAgree;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
 
     // 추가된 생성자
-    public Member(String name, String password, String email, String phoneNumber, String role) {
+    public Member(String name, String password, String email, String phoneNumber, UserRole role) {
         this.name = name;
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.role = role;
+    }
+
+    public boolean isDeleted() {
+        return this.status == UserStatus.DELETED;
+    }
+
+    public void delete() {
+        this.status = UserStatus.DELETED;
     }
 }
 

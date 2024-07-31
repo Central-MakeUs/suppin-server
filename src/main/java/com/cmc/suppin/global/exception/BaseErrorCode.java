@@ -1,8 +1,13 @@
 package com.cmc.suppin.global.exception;
 
+import com.cmc.suppin.global.response.ErrorResponse;
+import org.springframework.http.HttpStatus;
+
 public interface BaseErrorCode {
 
-    public ErrorReasonDTO getReason();
+    ErrorResponse getErrorResponse();
 
-    public ErrorReasonDTO getReasonHttpStatus();
+    String getMessage();
+
+    HttpStatus getStatus();
 }
