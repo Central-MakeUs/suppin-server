@@ -8,12 +8,17 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
         show_sql: true
         format_sql: true
+
+jwt:
+  token:
+    secret: ${JWT_TOKEN_SECRET}
+    expriration: ${ACCESS_EXPIRY_SECONDS}
 
 # multipart 파일 용량 늘려주는 부분
 servlet:
