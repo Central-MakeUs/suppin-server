@@ -65,10 +65,9 @@ public class MemberService {
     /**
      * 이메일 중복 확인
      */
-    public Boolean confirmEmail(MemberRequestDTO.JoinDTO request) {
+    public Boolean confirmEmail(MemberRequestDTO.EmailConfirmDTO request) {
         // 이메일 중복 체크
-        validateDuplicateEmail(request);
-        return true;
+        return !memberRepository.existsByEmail(request.getEmail());
     }
 
     /**
@@ -129,4 +128,7 @@ public class MemberService {
     }
 
 
+    public void logout(Long memberId) {
+
+    }
 }

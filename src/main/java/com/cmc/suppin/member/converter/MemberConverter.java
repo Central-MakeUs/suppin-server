@@ -37,6 +37,12 @@ public class MemberConverter {
                 .build();
     }
 
+    public static MemberResponseDTO.EmailConfirmResultDTO toEmailConfirmResultDTO(boolean checkEmail) {
+        return MemberResponseDTO.EmailConfirmResultDTO.builder()
+                .checkEmail(checkEmail)
+                .build();
+    }
+
     public static MemberResponseDTO.LoginResponseDTO toLoginResponseDTO(String token, Member member) {
         return MemberResponseDTO.LoginResponseDTO.builder()
                 .token(token)
