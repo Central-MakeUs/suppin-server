@@ -15,6 +15,24 @@ spring:
         show_sql: true
         format_sql: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            trust: smtp.gmail.com
+    protocol: smtp
+    default-encoding: UTF-8
+    test-connection: false
+
 jwt:
   token:
     secret: ${JWT_TOKEN_SECRET}
