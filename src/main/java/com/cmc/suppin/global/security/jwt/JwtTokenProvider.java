@@ -3,6 +3,7 @@ package com.cmc.suppin.global.security.jwt;
 
 import com.cmc.suppin.global.security.user.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -17,10 +18,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.util.StringUtils.hasText;
@@ -33,16 +31,14 @@ public class JwtTokenProvider {
     private static final String AUTHENTICATION_CLAIM_NAME = "roles";
     private static final String AUTHENTICATION_SCHEME = "Bearer ";
 
+    // 토큰 블랙리스트 관리용 Set
+    private final Set<String> tokenBlacklist = new HashSet<>();
+
     @Value("${JWT_SECRET_KEY}")
     private String secretKey;
 
     @Value("${ACCESS_EXPIRY_SECONDS}")
     private int accessExpirySeconds;
-
-//    @Value("${jwt.refresh-expiry-seconds}")
-//    private int refreshExpirySeconds;
-
-//    private final RedisKeyRepository redisKeyRepository;
 
     public String createAccessToken(UserDetailsImpl userDetails) {
         Instant now = Instant.now();
@@ -63,17 +59,6 @@ public class JwtTokenProvider {
                 .signWith(extractSecretKey())
                 .compact();
     }
-
-//    public String createRefreshToken() {
-//        Instant now = Instant.now();
-//        Instant expirationTime = now.plusSeconds(refreshExpirySeconds);
-//
-//        return Jwts.builder()
-//                .issuedAt(Date.from(now))
-//                .expiration(Date.from(expirationTime))
-//                .signWith(extractSecretKey())
-//                .compact();
-//    }
 
     /**
      * 권한 체크
@@ -121,11 +106,30 @@ public class JwtTokenProvider {
                 .getPayload();
     }
 
+    /*
     public void validateAccessToken(String accessToken) {
         Jwts.parser()
                 .verifyWith(extractSecretKey())
                 .build()
                 .parse(accessToken);
+    }
+    */
+
+    public boolean validateAccessToken(String accessToken) {
+        if (isTokenBlacklisted(accessToken)) {
+            return false;
+        }
+
+        try {
+            Jwts.parser()
+                    .verifyWith(extractSecretKey())
+                    .build()
+                    .parse(accessToken);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            log.error("Invalid JWT token: {}", e.getMessage());
+            return false;
+        }
     }
 
     /**
@@ -133,6 +137,17 @@ public class JwtTokenProvider {
      */
     private SecretKey extractSecretKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+    }
+
+    /**
+     * 토큰 블랙리스트 관리
+     */
+    public void addTokenToBlacklist(String token) {
+        tokenBlacklist.add(token);
+    }
+
+    public boolean isTokenBlacklisted(String token) {
+        return tokenBlacklist.contains(token);
     }
 }
 
