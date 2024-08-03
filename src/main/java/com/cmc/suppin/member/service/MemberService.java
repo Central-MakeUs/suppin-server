@@ -23,9 +23,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -162,7 +162,9 @@ public class MemberService {
     }
 
     private String generateVerificationCode() {
-        return UUID.randomUUID().toString().substring(0, 6);
+        SecureRandom random = new SecureRandom();
+        int code = random.nextInt(900000) + 100000; // 6자리 숫자 생성 (100000 ~ 999999)
+        return String.valueOf(code);
     }
 
     private void saveVerificationToken(String email, String code) {
