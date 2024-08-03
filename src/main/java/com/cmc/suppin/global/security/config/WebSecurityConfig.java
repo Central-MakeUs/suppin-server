@@ -119,7 +119,7 @@ public class WebSecurityConfig {
                 antMatcher("/actuator/**"),
                 antMatcher("/v3/api-docs/**"),
                 antMatcher("/api/v1/members/login/**"),
-                antMatcher("/api/v1/members/join"),
+                antMatcher("/api/v1/members/join/**"),
                 antMatcher("/api/v1/members/checkUserId"),
                 antMatcher("/api/v1/members/checkEmail"),
                 antMatcher("/api/v1/survey/reply/**")   // 설문조사 응답 시 적용
