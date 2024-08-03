@@ -1,17 +1,24 @@
-package com.cmc.suppin.event.domain;
+package com.cmc.suppin.event.events.domain;
 
-import com.cmc.suppin.comment.domain.Comment;
+import com.cmc.suppin.event.crawl.domain.Comment;
+import com.cmc.suppin.event.survey.domain.Survey;
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
 import com.cmc.suppin.global.enums.EventType;
 import com.cmc.suppin.member.domain.Member;
-import com.cmc.suppin.survey.domain.Survey;
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
+@Builder
+@DynamicInsert
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Event extends BaseDateTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,19 +38,29 @@ public class Event extends BaseDateTimeEntity {
     @Column(columnDefinition = "VARCHAR(100)", nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EventType type;
 
+    @Column(columnDefinition = "TEXT")
+    private String url;
+
     @Column
     private LocalDateTime startDate;
+
     @Column
     private LocalDateTime endDate;
+
     @Column
     private LocalDateTime announcementDate;
+
+    public void setMember(Member member) {
+        this.member = member;
+        member.getEventList().add(this);
+    }
 
     // Getters and Setters
 
