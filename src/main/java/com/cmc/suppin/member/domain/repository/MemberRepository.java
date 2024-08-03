@@ -7,11 +7,13 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    Boolean existsByUserId(String userId);
+    Boolean existsByUserIdAndStatusNot(String userId, String status);
 
-    Boolean existsByEmail(String email);
+    Boolean existsByEmailAndStatusNot(String email, String status);
 
-    Optional<Member> findByUserId(String userId);
+    Optional<Member> findByUserIdAndStatusNot(String userId, String status);
+
+    Optional<Member> findByIdAndStatusNot(Long id, String status);
 
     void deleteByUserId(String userId);
 }

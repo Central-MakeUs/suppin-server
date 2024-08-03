@@ -26,7 +26,7 @@ public class MemberDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        Member member = memberRepository.findByUserId(userId)
+        Member member = memberRepository.findByUserIdAndStatusNot(userId, "DELETED")
                 .orElseThrow(() -> new SecurityException(MEMBER_NOT_FOUND));
 
         if (member.isDeleted()) {

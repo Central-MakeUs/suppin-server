@@ -36,7 +36,7 @@ public class MemberService {
      */
     public Member join(MemberRequestDTO.JoinDTO request) {
         // 중복된 아이디 체크
-        if (memberRepository.existsByUserId(request.getUserId())) {
+        if (memberRepository.existsByUserIdAndStatusNot(request.getUserId(), "DELETED")) {
             throw new IllegalArgumentException("이미 존재하는 유저입니다.");
         }
 
@@ -60,7 +60,7 @@ public class MemberService {
      */
     public Boolean confirmUserId(String userId) {
         // 아이디 중복 체크
-        return !memberRepository.existsByUserId(userId);
+        return !memberRepository.existsByUserIdAndStatusNot(userId, "DELETED");
     }
 
     /**
@@ -68,7 +68,7 @@ public class MemberService {
      */
     public Boolean confirmEmail(String email) {
         // 이메일 중복 체크
-        return !memberRepository.existsByEmail(email);
+        return !memberRepository.existsByEmailAndStatusNot(email, "DELETED");
     }
 
     /**
@@ -115,12 +115,12 @@ public class MemberService {
     }
 
     private Member getMember(Long memberId) {
-        return memberRepository.findById(memberId)
+        return memberRepository.findByIdAndStatusNot(memberId, "DELETED")
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 
     public MemberResponseDTO.MemberDetailsDTO getMemberDetails(Long id) {
-        Member member = memberRepository.findById(id)
+        Member member = memberRepository.findByIdAndStatusNot(id, "DELETED")
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
         return MemberConverter.toMemberDetailsDTO(member);
     }
@@ -144,7 +144,7 @@ public class MemberService {
     }
 
     private void validateMember(String userId) {
-        Member member = memberRepository.findByUserId(userId)
+        Member member = memberRepository.findByUserIdAndStatusNot(userId, "DELETED")
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         if (member.isDeleted()) {
@@ -153,7 +153,7 @@ public class MemberService {
     }
 
     private void validateDuplicateEmail(MemberRequestDTO.JoinDTO request) {
-        if (Boolean.TRUE.equals(memberRepository.existsByEmail(request.getEmail()))) {
+        if (Boolean.TRUE.equals(memberRepository.existsByEmailAndStatusNot(request.getEmail(), "DELETED"))) {
             throw new MemberException(MemberErrorCode.DUPLICATE_MEMBER_EMAIL);
         }
     }

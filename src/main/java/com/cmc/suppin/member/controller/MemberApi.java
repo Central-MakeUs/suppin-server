@@ -104,8 +104,6 @@ public class MemberApi {
         return ResponseEntity.ok(ApiResponse.of(memberDetails));
     }
 
-    // TODO: 로그아웃, 비밀번호 변경, 회원정보 상세 조회, 회원정보 수정 API
-
 
     // TODO: 아이디 찾기, 비밀번호 찾기 API 구현 필요
 
