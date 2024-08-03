@@ -47,4 +47,12 @@ public class MemberResponseDTO {
         private String userId;
 
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CheckPasswordDTO {
+        private Boolean checkPassword;
+    }
 }

@@ -91,9 +91,9 @@ public class MemberApi {
     // 현재 비밀번호 확인
     @GetMapping("/password/check")
     @Operation(summary = "현재 비밀번호 확인 API", description = "request : password")
-    public ResponseEntity<ApiResponse<Void>> checkPassword(@RequestParam String password, @CurrentAccount Account account) {
+    public ResponseEntity<ApiResponse<MemberResponseDTO.CheckPasswordDTO>> checkPassword(@RequestParam String password, @CurrentAccount Account account) {
         memberService.checkPassword(password, account.id());
-        return ResponseEntity.ok(ApiResponse.of(ResponseCode.SUCCESS));
+        return ResponseEntity.ok(ApiResponse.confirm(ResponseCode.CONFIRM));
     }
 
 
