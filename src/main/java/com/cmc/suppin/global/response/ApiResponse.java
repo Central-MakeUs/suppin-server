@@ -30,4 +30,16 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> of(ResponseCode responseCode) {
         return new ApiResponse<>(responseCode.getCode(), responseCode.getMessage(), null);
     }
+
+    public static <T> ApiResponse<T> confirm(T data) {
+        return new ApiResponse<>(ResponseCode.CONFIRM.getCode(), ResponseCode.CONFIRM.getMessage(), data);
+    }
+
+    public static <T> ApiResponse<T> confirm(ResponseCode responseCode, T data) {
+        return new ApiResponse<>(responseCode.getCode(), responseCode.getMessage(), data);
+    }
+
+    public static <T> ApiResponse<T> confirm(ResponseCode responseCode) {
+        return new ApiResponse<>(responseCode.getCode(), responseCode.getMessage(), null);
+    }
 }

@@ -37,10 +37,26 @@ public class MemberConverter {
                 .build();
     }
 
+    public static MemberResponseDTO.EmailConfirmResultDTO toEmailConfirmResultDTO(boolean checkEmail) {
+        return MemberResponseDTO.EmailConfirmResultDTO.builder()
+                .checkEmail(checkEmail)
+                .build();
+    }
+
     public static MemberResponseDTO.LoginResponseDTO toLoginResponseDTO(String token, Member member) {
         return MemberResponseDTO.LoginResponseDTO.builder()
                 .token(token)
                 .userId(member.getUserId())
+                .build();
+    }
+
+    public static MemberResponseDTO.MemberDetailsDTO toMemberDetailsDTO(Member member) {
+        return MemberResponseDTO.MemberDetailsDTO.builder()
+                .userId(member.getUserId())
+                .name(member.getName())
+                .email(member.getEmail())
+                .phoneNumber(member.getPhoneNumber())
+                .createdAt(member.getCreatedAt())
                 .build();
     }
 }

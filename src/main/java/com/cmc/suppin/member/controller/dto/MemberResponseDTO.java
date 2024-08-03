@@ -18,6 +18,7 @@ public class MemberResponseDTO {
         String userId;
         String name;
         String email;
+        String phoneNumber;
         LocalDateTime createdAt;
     }
 
@@ -27,6 +28,15 @@ public class MemberResponseDTO {
     @AllArgsConstructor
     public static class IdConfirmResultDTO {
         Boolean checkUserId;
+
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EmailConfirmResultDTO {
+        Boolean checkEmail;
     }
 
     @Getter
@@ -36,5 +46,26 @@ public class MemberResponseDTO {
     public static class LoginResponseDTO {
         private String token;
         private String userId;
+
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CheckPasswordDTO {
+        private Boolean checkPassword;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class MemberDetailsDTO {
+        private String userId;
+        private String name;
+        private String email;
+        private String phoneNumber;
+        private LocalDateTime createdAt;
     }
 }

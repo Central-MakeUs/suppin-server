@@ -8,7 +8,7 @@ import com.cmc.suppin.member.controller.dto.MemberRequestDTO;
 import com.cmc.suppin.member.controller.dto.MemberResponseDTO;
 import com.cmc.suppin.member.converter.MemberConverter;
 import com.cmc.suppin.member.domain.Member;
-import com.cmc.suppin.member.service.command.MemberService;
+import com.cmc.suppin.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -37,20 +37,45 @@ public class MemberApi {
         return ResponseEntity.ok(ApiResponse.of(MemberConverter.toJoinResultDTO(member)));
     }
 
-    // 아이디 중복 체크
-    @PostMapping("/checkUserId")
-    @Operation(summary = "아이디 중복 체크 API", description = "request : userId, response: 중복이면 false, 중복 아니면 true")
-    public ResponseEntity<ApiResponse<MemberResponseDTO.IdConfirmResultDTO>> checkUserId(@RequestBody MemberRequestDTO.IdConfirmDTO request) {
-        boolean checkUserId = memberService.confirmUserId(request);
-
-        return ResponseEntity.ok(ApiResponse.of(MemberConverter.toIdConfirmResultDTO(checkUserId)));
+    // 이메일 인증번호 요청(회원가입 시)
+    @PostMapping("/join/email/auth")
+    @Operation(summary = "이메일 인증번호 요청(회원가입 시) API", description = "request : email(이메일을 입력하면 해당 이메일로 인증번호 전송), response: 인증번호 전송 성공 시 true, 실패 시 false")
+    public ResponseEntity<ApiResponse<Void>> requestEmailAuth(@RequestBody @Valid MemberRequestDTO.EmailRequestDTO request) {
+        memberService.requestEmailVerification(request.getEmail());
+        return ResponseEntity.ok(ApiResponse.of(ResponseCode.SUCCESS));
     }
+
+    // 이메일 인증번호 확인(회원가입 시)
+    @PostMapping("/join/email/verification")
+    @Operation(summary = "이메일 인증번호 확인 API", description = "request : email, verificationCode, response: 인증번호 일치 시 true, 불일치 시 false")
+    public ResponseEntity<ApiResponse<Void>> verifyEmailCode(@RequestBody @Valid MemberRequestDTO.EmailVerificationDTO request) {
+        memberService.verifyEmailCode(request.getEmail(), request.getVerificationCode());
+        return ResponseEntity.ok(ApiResponse.confirm(ResponseCode.CONFIRM));
+    }
+
+    // 아이디 중복 체크
+    @GetMapping("/checkUserId")
+    @Operation(summary = "아이디 중복 체크 API", description = "request : userId, response: 중복이면 false, 중복 아니면 true")
+    public ResponseEntity<ApiResponse<MemberResponseDTO.IdConfirmResultDTO>> checkUserId(@RequestParam String userId) {
+        boolean checkUserId = memberService.confirmUserId(userId);
+
+        return ResponseEntity.ok(ApiResponse.confirm(MemberConverter.toIdConfirmResultDTO(checkUserId)));
+    }
+
+    // 이메일 중복 체크
+    @GetMapping("/checkEmail")
+    @Operation(summary = "이메일 중복 체크 API", description = "request : email, response: 중복이면 false, 중복 아니면 true")
+    public ResponseEntity<ApiResponse<MemberResponseDTO.EmailConfirmResultDTO>> checkEmail(@RequestParam String email) {
+        boolean checkEmail = memberService.confirmEmail(email);
+
+        return ResponseEntity.ok(ApiResponse.confirm(MemberConverter.toEmailConfirmResultDTO(checkEmail)));
+    }
+
 
     // 회원탈퇴
     @DeleteMapping("/delete")
-    @Operation(summary = "회원탈퇴 API", description = "로그인 시 발급받은 토큰으로 인가 필요")
-    public ResponseEntity<ApiResponse<Void>> deleteMember(
-            @CurrentAccount Account account) {
+    @Operation(summary = "회원탈퇴 API", description = "로그인 시 발급받은 토큰으로 인가 필요, Authentication 헤더에 토큰을 넣어서 요청")
+    public ResponseEntity<ApiResponse<Void>> deleteMember(@CurrentAccount Account account) {
         memberService.deleteMember(account.id());
         return ResponseEntity.ok(ApiResponse.of(ResponseCode.SUCCESS));
     }
@@ -64,53 +89,38 @@ public class MemberApi {
         return ResponseEntity.ok(ApiResponse.of(response));
     }
 
-    /**
-     * TODO: 로그아웃, 비밀번호 변경, 회원정보 상세 조회, 회원정보 수정 API
-     */
+    // 로그아웃
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃 API", description = "로그인 시 발급받은 토큰으로 인가 필요, Authentication 헤더에 토큰을 넣어서 요청")
+    public ResponseEntity<ApiResponse<Void>> logout(@CurrentAccount Account account) {
+        memberService.logout(account.id());
+        return ResponseEntity.ok(ApiResponse.of(ResponseCode.SUCCESS));
+    }
 
-//    // 로그아웃
-//    @PostMapping("/logout")
-//    @Operation(summary = "로그아웃 API", description = "JWT 토큰을 헤더에 포함시켜 보내주시면 됩니다.")
-//    public ApiResponse<Void> logout(@AuthenticationPrincipal MemberDetails memberDetails) {
-//        if (memberDetails == null) {
-//            return ApiResponse.onFailure("403", "인증된 사용자만 로그아웃할 수 있습니다.", null);
-//        }
-//        memberCommandService.logout(memberDetails.getUserId());
-//        return ApiResponse.onSuccess(null, SuccessStatus.MEMBER_LOGOUT_SUCCESS);
-//    }
-//
-//    // 비밀번호 변경
-//    @PutMapping("/changePassword")
-//    @Operation(summary = "비밀번호 변경 API", description = "request : userId, password, newPassword")
-//    public ApiResponse<Void> changePassword(@AuthenticationPrincipal MemberDetails memberDetails, @RequestBody @Valid MemberRequestDTO.ChangePasswordDTO request) {
-//        if (memberDetails == null) {
-//            return ApiResponse.onFailure("403", "인증된 사용자만 비밀번호를 변경할 수 있습니다.", null);
-//        }
-//        memberCommandService.changePassword(memberDetails.getUserId(), request);
-//        return ApiResponse.onSuccess(null, SuccessStatus.MEMBER_CHANGE_PASSWORD_SUCCESS);
-//    }
-//
-//    // 회원정보 상세 조회(마이페이지)
-//    @GetMapping("/info")
-//    @Operation(summary = "회원정보 상세 조회 API", description = "JWT 토큰을 헤더에 포함시켜 보내주시면 됩니다.")
-//    public ApiResponse<MemberResponseDTO.MemberInfoDTO> getMemberInfo(@AuthenticationPrincipal MemberDetails memberDetails) {
-//        if (memberDetails == null) {
-//            return ApiResponse.onFailure("403", "인증된 사용자만 조회할 수 있습니다.", null);
-//        }
-//        Member member = memberCommandService.getMemberInfo(memberDetails.getUserId());
-//        return ApiResponse.onSuccess(MemberConverter.toMemberInfoDTO(member), SuccessStatus.MEMBER_INFO_SUCCESS);
-//    }
-//
-//    // 회원정보 수정
-//    @PutMapping("/info/update")
-//    @Operation(summary = "회원정보 수정 API", description = "request : userId, name, phone, email")
-//    public ApiResponse<Void> updateMemberInfo(@AuthenticationPrincipal MemberDetails memberDetails, @RequestBody @Valid MemberRequestDTO.UpdateMemberInfoDTO request) {
-//        if (memberDetails == null) {
-//            return ApiResponse.onFailure("403", "인증된 사용자만 수정할 수 있습니다.", null);
-//        }
-//        memberCommandService.updateMemberInfo(memberDetails.getUserId(), request);
-//        return ApiResponse.onSuccess(null, SuccessStatus.MEMBER_UPDATE_SUCCESS);
-//    }
+    // 비밀번호 변경
+    @PostMapping("/password/update")
+    @Operation(summary = "비밀번호 변경 API", description = "request : password, newPassword")
+    public ResponseEntity<ApiResponse<Void>> updatePassword(@RequestBody @Valid MemberRequestDTO.PasswordUpdateDTO request, @CurrentAccount Account account) {
+        memberService.updatePassword(request, account.id());
+        return ResponseEntity.ok(ApiResponse.of(ResponseCode.SUCCESS));
+    }
+
+    // 현재 비밀번호 확인
+    @GetMapping("/password/check")
+    @Operation(summary = "현재 비밀번호 확인 API", description = "request : password")
+    public ResponseEntity<ApiResponse<MemberResponseDTO.CheckPasswordDTO>> checkPassword(@RequestParam String password, @CurrentAccount Account account) {
+        memberService.checkPassword(password, account.id());
+        return ResponseEntity.ok(ApiResponse.confirm(ResponseCode.CONFIRM));
+    }
+
+    // 회원정보 상세 조회
+    @GetMapping("/me")
+    @Operation(summary = "회원정보 상세 조회 API", description = "로그인 시 발급받은 토큰으로 인가 필요, Authentication 헤더에 토큰을 넣어서 요청")
+    public ResponseEntity<ApiResponse<MemberResponseDTO.MemberDetailsDTO>> getUserDetail(@CurrentAccount Account account) {
+        MemberResponseDTO.MemberDetailsDTO memberDetails = memberService.getMemberDetails(account.id());
+        return ResponseEntity.ok(ApiResponse.of(memberDetails));
+    }
+
 
     // TODO: 아이디 찾기, 비밀번호 찾기 API 구현 필요
 
