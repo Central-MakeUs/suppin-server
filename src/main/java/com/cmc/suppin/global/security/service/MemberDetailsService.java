@@ -1,5 +1,6 @@
 package com.cmc.suppin.global.security.service;
 
+import com.cmc.suppin.global.enums.UserStatus;
 import com.cmc.suppin.global.security.exception.SecurityException;
 import com.cmc.suppin.global.security.user.UserDetailsImpl;
 import com.cmc.suppin.member.domain.Member;
@@ -26,7 +27,7 @@ public class MemberDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        Member member = memberRepository.findByUserIdAndStatusNot(userId, "DELETED")
+        Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new SecurityException(MEMBER_NOT_FOUND));
 
         if (member.isDeleted()) {
