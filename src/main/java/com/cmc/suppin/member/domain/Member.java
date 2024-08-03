@@ -65,5 +65,9 @@ public class Member extends BaseDateTimeEntity {
     public void delete() {
         this.status = UserStatus.DELETED;
     }
+
+    public void updatePassword(String encode) {
+        this.password = encode;
+    }
 }
 

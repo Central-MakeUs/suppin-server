@@ -54,4 +54,14 @@ public class MemberRequestDTO {
         private String userId;
         private String password;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PasswordUpdateDTO {
+        private String password;
+        private String newPassword;
+    }
+
+
 }

@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,17 +58,17 @@ public class MemberService {
     /**
      * ID 중복 확인
      */
-    public Boolean confirmUserId(MemberRequestDTO.IdConfirmDTO request) {
+    public Boolean confirmUserId(String userId) {
         // 아이디 중복 체크
-        return !memberRepository.existsByUserId(request.getUserId());
+        return !memberRepository.existsByUserId(userId);
     }
 
     /**
      * 이메일 중복 확인
      */
-    public Boolean confirmEmail(MemberRequestDTO.EmailConfirmDTO request) {
+    public Boolean confirmEmail(String email) {
         // 이메일 중복 체크
-        return !memberRepository.existsByEmail(request.getEmail());
+        return !memberRepository.existsByEmail(email);
     }
 
     /**
@@ -102,7 +103,20 @@ public class MemberService {
                 .build();
     }
 
-    // 검증 메서드
+    /**
+     * 로그아웃
+     */
+    public void logout(Long accountId) {
+        // 현재 인증된 사용자의 토큰을 무효화하는 로직
+        String accessToken = SecurityContextHolder.getContext().getAuthentication().getCredentials().toString();
+        if (jwtTokenProvider.validateAccessToken(accessToken)) {
+            jwtTokenProvider.addTokenToBlacklist(accessToken); // 토큰 블랙리스트에 추가
+        }
+    }
+
+    /**
+     * 검증 메서드
+     */
     private boolean isValidPassword(String password) {
         return password.matches("(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,20}");
     }
@@ -127,8 +141,27 @@ public class MemberService {
         }
     }
 
+    public void validatePasswordFormat(String password) {
+        if (!password.matches("(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,20}")) {
+            throw new MemberException(MemberErrorCode.PASSWORD_FORMAT_NOT_MATCHED);
+        }
+    }
 
-    public void logout(Long memberId) {
+    public void updatePassword(MemberRequestDTO.PasswordUpdateDTO request, Long id) {
+        validatePasswordFormat(request.getNewPassword());
+        Member member = getMember(id);
 
+        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+            throw new MemberException(MemberErrorCode.PASSWORD_CONFIRM_NOT_MATCHED);
+        }
+
+        member.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+    }
+
+    public void checkPassword(String password, Long id) {
+        Member member = getMember(id);
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new MemberException(MemberErrorCode.PASSWORD_CONFIRM_NOT_MATCHED);
+        }
     }
 }
