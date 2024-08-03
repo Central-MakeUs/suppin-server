@@ -3,6 +3,7 @@ package com.cmc.suppin.event.events.domain;
 import com.cmc.suppin.event.crawl.domain.Comment;
 import com.cmc.suppin.event.survey.domain.Survey;
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
+import com.cmc.suppin.global.enums.EventStatus;
 import com.cmc.suppin.global.enums.EventType;
 import com.cmc.suppin.member.domain.Member;
 import jakarta.persistence.*;
@@ -56,6 +57,9 @@ public class Event extends BaseDateTimeEntity {
 
     @Column
     private LocalDateTime announcementDate;
+
+    @Enumerated(EnumType.STRING)
+    private EventStatus status;
 
     public void setMember(Member member) {
         this.member = member;
