@@ -8,7 +8,7 @@ import com.cmc.suppin.member.controller.dto.MemberRequestDTO;
 import com.cmc.suppin.member.controller.dto.MemberResponseDTO;
 import com.cmc.suppin.member.converter.MemberConverter;
 import com.cmc.suppin.member.domain.Member;
-import com.cmc.suppin.member.service.command.MemberService;
+import com.cmc.suppin.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -37,6 +37,22 @@ public class MemberApi {
         return ResponseEntity.ok(ApiResponse.of(MemberConverter.toJoinResultDTO(member)));
     }
 
+    // 이메일 인증번호 요청(회원가입 시)
+    @PostMapping("/join/email/auth")
+    @Operation(summary = "이메일 인증번호 요청(회원가입 시) API", description = "request : email(이메일을 입력하면 해당 이메일로 인증번호 전송), response: 인증번호 전송 성공 시 true, 실패 시 false")
+    public ResponseEntity<ApiResponse<Void>> requestEmailAuth(@RequestBody @Valid MemberRequestDTO.EmailRequestDTO request) {
+        memberService.requestEmailVerification(request.getEmail());
+        return ResponseEntity.ok(ApiResponse.of(ResponseCode.SUCCESS));
+    }
+
+    // 이메일 인증번호 확인(회원가입 시)
+    @PostMapping("/join/email/verification")
+    @Operation(summary = "이메일 인증번호 확인 API", description = "request : email, verificationCode, response: 인증번호 일치 시 true, 불일치 시 false")
+    public ResponseEntity<ApiResponse<Void>> verifyEmailCode(@RequestBody @Valid MemberRequestDTO.EmailVerificationDTO request) {
+        memberService.verifyEmailCode(request.getEmail(), request.getVerificationCode());
+        return ResponseEntity.ok(ApiResponse.confirm(ResponseCode.CONFIRM));
+    }
+
     // 아이디 중복 체크
     @GetMapping("/checkUserId")
     @Operation(summary = "아이디 중복 체크 API", description = "request : userId, response: 중복이면 false, 중복 아니면 true")
@@ -54,6 +70,7 @@ public class MemberApi {
 
         return ResponseEntity.ok(ApiResponse.confirm(MemberConverter.toEmailConfirmResultDTO(checkEmail)));
     }
+
 
     // 회원탈퇴
     @DeleteMapping("/delete")

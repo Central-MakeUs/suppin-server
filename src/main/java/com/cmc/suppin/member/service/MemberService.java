@@ -1,12 +1,16 @@
-package com.cmc.suppin.member.service.command;
+package com.cmc.suppin.member.service;
 
+import com.cmc.suppin.global.config.MailConfig;
+import com.cmc.suppin.global.enums.UserStatus;
 import com.cmc.suppin.global.exception.MemberErrorCode;
 import com.cmc.suppin.global.security.jwt.JwtTokenProvider;
 import com.cmc.suppin.global.security.user.UserDetailsImpl;
 import com.cmc.suppin.member.controller.dto.MemberRequestDTO;
 import com.cmc.suppin.member.controller.dto.MemberResponseDTO;
 import com.cmc.suppin.member.converter.MemberConverter;
+import com.cmc.suppin.member.domain.EmailVerificationToken;
 import com.cmc.suppin.member.domain.Member;
+import com.cmc.suppin.member.domain.repository.EmailVerificationTokenRepository;
 import com.cmc.suppin.member.domain.repository.MemberRepository;
 import com.cmc.suppin.member.exception.MemberException;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +23,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -30,13 +38,30 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
+    private final MailConfig mailConfig;
+
+    public boolean requestEmailVerification(String email) {
+        String code = generateVerificationCode();
+        saveVerificationToken(email, code);
+        return mailConfig.sendMail(email, code);
+    }
+
+    public boolean verifyEmailCode(String email, String code) {
+        return verifyToken(email, code);
+    }
 
     /**
      * 회원가입
      */
     public Member join(MemberRequestDTO.JoinDTO request) {
+        // 이메일 인증 체크
+        if (!verifyEmailCode(request.getEmail(), request.getVerificationCode())) {
+            throw new IllegalArgumentException("이메일 인증이 필요합니다.");
+        }
+
         // 중복된 아이디 체크
-        if (memberRepository.existsByUserIdAndStatusNot(request.getUserId(), "DELETED")) {
+        if (memberRepository.existsByUserIdAndStatusNot(request.getUserId(), UserStatus.DELETED)) {
             throw new IllegalArgumentException("이미 존재하는 유저입니다.");
         }
 
@@ -60,7 +85,7 @@ public class MemberService {
      */
     public Boolean confirmUserId(String userId) {
         // 아이디 중복 체크
-        return !memberRepository.existsByUserIdAndStatusNot(userId, "DELETED");
+        return !memberRepository.existsByUserIdAndStatusNot(userId, UserStatus.DELETED);
     }
 
     /**
@@ -68,7 +93,7 @@ public class MemberService {
      */
     public Boolean confirmEmail(String email) {
         // 이메일 중복 체크
-        return !memberRepository.existsByEmailAndStatusNot(email, "DELETED");
+        return !memberRepository.existsByEmailAndStatusNot(email, UserStatus.DELETED);
     }
 
     /**
@@ -115,12 +140,12 @@ public class MemberService {
     }
 
     private Member getMember(Long memberId) {
-        return memberRepository.findByIdAndStatusNot(memberId, "DELETED")
+        return memberRepository.findByIdAndStatusNot(memberId, UserStatus.DELETED)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 
     public MemberResponseDTO.MemberDetailsDTO getMemberDetails(Long id) {
-        Member member = memberRepository.findByIdAndStatusNot(id, "DELETED")
+        Member member = memberRepository.findByIdAndStatusNot(id, UserStatus.DELETED)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
         return MemberConverter.toMemberDetailsDTO(member);
     }
@@ -136,6 +161,30 @@ public class MemberService {
         member.updatePassword(passwordEncoder.encode(request.getNewPassword()));
     }
 
+    private String generateVerificationCode() {
+        return UUID.randomUUID().toString().substring(0, 6);
+    }
+
+    private void saveVerificationToken(String email, String code) {
+        EmailVerificationToken verificationToken = EmailVerificationToken.builder()
+                .email(email)
+                .token(code)
+                .expiryDate(LocalDateTime.now().plusHours(1))
+                .build();
+
+        emailVerificationTokenRepository.deleteByEmail(email);
+        emailVerificationTokenRepository.save(verificationToken);
+    }
+
+    private boolean verifyToken(String email, String token) {
+        Optional<EmailVerificationToken> verificationTokenOpt = emailVerificationTokenRepository.findByEmailAndToken(email, token);
+        if (verificationTokenOpt.isPresent()) {
+            EmailVerificationToken verificationToken = verificationTokenOpt.get();
+            return !verificationToken.isExpired();
+        }
+        return false;
+    }
+
     /**
      * 검증 메서드
      */
@@ -144,7 +193,7 @@ public class MemberService {
     }
 
     private void validateMember(String userId) {
-        Member member = memberRepository.findByUserIdAndStatusNot(userId, "DELETED")
+        Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         if (member.isDeleted()) {
@@ -153,7 +202,7 @@ public class MemberService {
     }
 
     private void validateDuplicateEmail(MemberRequestDTO.JoinDTO request) {
-        if (Boolean.TRUE.equals(memberRepository.existsByEmailAndStatusNot(request.getEmail(), "DELETED"))) {
+        if (Boolean.TRUE.equals(memberRepository.existsByEmailAndStatusNot(request.getEmail(), UserStatus.DELETED))) {
             throw new MemberException(MemberErrorCode.DUPLICATE_MEMBER_EMAIL);
         }
     }

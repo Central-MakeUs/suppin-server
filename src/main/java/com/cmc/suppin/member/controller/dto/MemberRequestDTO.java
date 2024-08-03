@@ -31,6 +31,9 @@ public class MemberRequestDTO {
 
         @NotBlank(message = "휴대폰 번호를 입력해주세요")
         private String phone;
+
+        @NotBlank(message = "이메일 인증번호를 입력해주세요")
+        private String verificationCode;
     }
 
     @Getter
@@ -63,5 +66,24 @@ public class MemberRequestDTO {
         private String newPassword;
     }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EmailRequestDTO {
+        @NotBlank(message = "이메일을 입력해주세요")
+        @Email(message = "이메일 형식이 올바르지 않습니다.")
+        private String email;
+    }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EmailVerificationDTO {
+        @NotBlank(message = "이메일을 입력해주세요")
+        @Email(message = "이메일 형식이 올바르지 않습니다.")
+        private String email;
+
+        @NotBlank(message = "인증번호를 입력해주세요")
+        private String verificationCode;
+    }
 }
