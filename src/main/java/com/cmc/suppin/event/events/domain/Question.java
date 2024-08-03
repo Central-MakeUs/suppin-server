@@ -1,6 +1,8 @@
-package com.cmc.suppin.survey.domain;
+package com.cmc.suppin.event.events.domain;
 
 import com.cmc.suppin.answer.domain.Answer;
+import com.cmc.suppin.event.survey.domain.QuestionOption;
+import com.cmc.suppin.event.survey.domain.Survey;
 import com.cmc.suppin.global.enums.QuestionType;
 import jakarta.persistence.*;
 

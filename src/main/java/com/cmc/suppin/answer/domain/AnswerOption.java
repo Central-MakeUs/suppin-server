@@ -1,6 +1,6 @@
 package com.cmc.suppin.answer.domain;
 
-import com.cmc.suppin.survey.domain.QuestionOption;
+import com.cmc.suppin.event.survey.domain.QuestionOption;
 import jakarta.persistence.*;
 
 

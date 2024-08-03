@@ -1,4 +1,4 @@
-package com.cmc.suppin.survey.domain;
+package com.cmc.suppin.event.survey.domain;
 
 import com.cmc.suppin.answer.domain.AnonymousParticipant;
 import com.cmc.suppin.event.domain.Event;
