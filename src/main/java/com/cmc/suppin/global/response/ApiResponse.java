@@ -23,6 +23,10 @@ public class ApiResponse<T> {
         return new ApiResponse<>(ResponseCode.SUCCESS.getCode(), ResponseCode.SUCCESS.getMessage(), data);
     }
 
+    public static <T> ApiResponse<T> confirm(T data) {
+        return new ApiResponse<>(ResponseCode.CONFIRM.getCode(), ResponseCode.CONFIRM.getMessage(), data);
+    }
+
     public static <T> ApiResponse<T> of(ResponseCode responseCode, T data) {
         return new ApiResponse<>(responseCode.getCode(), responseCode.getMessage(), data);
     }
