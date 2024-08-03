@@ -114,6 +114,28 @@ public class MemberService {
         }
     }
 
+    private Member getMember(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    public MemberResponseDTO.MemberDetailsDTO getMemberDetails(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        return MemberConverter.toMemberDetailsDTO(member);
+    }
+
+    public void updatePassword(MemberRequestDTO.PasswordUpdateDTO request, Long id) {
+        validatePasswordFormat(request.getNewPassword());
+        Member member = getMember(id);
+
+        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+            throw new MemberException(MemberErrorCode.PASSWORD_CONFIRM_NOT_MATCHED);
+        }
+
+        member.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+    }
+
     /**
      * 검증 메서드
      */
@@ -130,11 +152,6 @@ public class MemberService {
         }
     }
 
-    private Member getMember(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-    }
-
     private void validateDuplicateEmail(MemberRequestDTO.JoinDTO request) {
         if (Boolean.TRUE.equals(memberRepository.existsByEmail(request.getEmail()))) {
             throw new MemberException(MemberErrorCode.DUPLICATE_MEMBER_EMAIL);
@@ -145,17 +162,6 @@ public class MemberService {
         if (!password.matches("(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,20}")) {
             throw new MemberException(MemberErrorCode.PASSWORD_FORMAT_NOT_MATCHED);
         }
-    }
-
-    public void updatePassword(MemberRequestDTO.PasswordUpdateDTO request, Long id) {
-        validatePasswordFormat(request.getNewPassword());
-        Member member = getMember(id);
-
-        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-            throw new MemberException(MemberErrorCode.PASSWORD_CONFIRM_NOT_MATCHED);
-        }
-
-        member.updatePassword(passwordEncoder.encode(request.getNewPassword()));
     }
 
     public void checkPassword(String password, Long id) {

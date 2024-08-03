@@ -18,6 +18,7 @@ public class MemberResponseDTO {
         String userId;
         String name;
         String email;
+        String phoneNumber;
         LocalDateTime createdAt;
     }
 
@@ -54,5 +55,17 @@ public class MemberResponseDTO {
     @Builder
     public static class CheckPasswordDTO {
         private Boolean checkPassword;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class MemberDetailsDTO {
+        private String userId;
+        private String name;
+        private String email;
+        private String phoneNumber;
+        private LocalDateTime createdAt;
     }
 }

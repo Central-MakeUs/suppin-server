@@ -49,4 +49,14 @@ public class MemberConverter {
                 .userId(member.getUserId())
                 .build();
     }
+
+    public static MemberResponseDTO.MemberDetailsDTO toMemberDetailsDTO(Member member) {
+        return MemberResponseDTO.MemberDetailsDTO.builder()
+                .userId(member.getUserId())
+                .name(member.getName())
+                .email(member.getEmail())
+                .phoneNumber(member.getPhoneNumber())
+                .createdAt(member.getCreatedAt())
+                .build();
+    }
 }

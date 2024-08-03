@@ -96,6 +96,13 @@ public class MemberApi {
         return ResponseEntity.ok(ApiResponse.confirm(ResponseCode.CONFIRM));
     }
 
+    // 회원정보 상세 조회
+    @GetMapping("/me")
+    @Operation(summary = "회원정보 상세 조회 API", description = "로그인 시 발급받은 토큰으로 인가 필요, Authentication 헤더에 토큰을 넣어서 요청")
+    public ResponseEntity<ApiResponse<MemberResponseDTO.MemberDetailsDTO>> getUserDetail(@CurrentAccount Account account) {
+        MemberResponseDTO.MemberDetailsDTO memberDetails = memberService.getMemberDetails(account.id());
+        return ResponseEntity.ok(ApiResponse.of(memberDetails));
+    }
 
     // TODO: 로그아웃, 비밀번호 변경, 회원정보 상세 조회, 회원정보 수정 API
 
