@@ -106,7 +106,7 @@ public class WebSecurityConfig {
     private RequestMatcher[] requestHasRoleUser() {
         List<RequestMatcher> requestMatchers = List.of(
                 antMatcher("/api/v1/members/**"),
-                antMatcher(PATCH, "/api/members")
+                antMatcher(PATCH, "/api/v1/members")
         );
         return requestMatchers.toArray(RequestMatcher[]::new);
     }
@@ -120,6 +120,8 @@ public class WebSecurityConfig {
                 antMatcher("/v3/api-docs/**"),
                 antMatcher("/api/v1/members/login/**"),
                 antMatcher("/api/v1/members/join"),
+                antMatcher("/api/v1/members/checkUserId"),
+                antMatcher("/api/v1/members/checkEmail"),
                 antMatcher("/api/v1/survey/reply/**")   // 설문조사 응답 시 적용
         );
         return requestMatchers.toArray(RequestMatcher[]::new);
