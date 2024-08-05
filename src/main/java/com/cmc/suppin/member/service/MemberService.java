@@ -171,7 +171,7 @@ public class MemberService {
         EmailVerificationToken verificationToken = EmailVerificationToken.builder()
                 .email(email)
                 .token(code)
-                .expiryDate(LocalDateTime.now().plusHours(1))
+                .expiryDate(LocalDateTime.now().plusMinutes(5))
                 .build();
 
         emailVerificationTokenRepository.deleteByEmail(email);
