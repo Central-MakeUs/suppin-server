@@ -47,7 +47,7 @@ public class MemberApi {
 
     // 이메일 인증번호 확인(회원가입 시)
     @PostMapping("/join/email/verification")
-    @Operation(summary = "이메일 인증번호 확인 API", description = "request : email, verificationCode, response: 인증번호 일치 시 true, 불일치 시 false")
+    @Operation(summary = "이메일 인증번호 확인 API", description = "request : email, verificationCode(인증번호 유효기간은 5분입니다.), response: 인증번호 일치 시 true, 불일치 시 false")
     public ResponseEntity<ApiResponse<Void>> verifyEmailCode(@RequestBody @Valid MemberRequestDTO.EmailVerificationDTO request) {
         memberService.verifyEmailCode(request.getEmail(), request.getVerificationCode());
         return ResponseEntity.ok(ApiResponse.confirm(ResponseCode.CONFIRM));
