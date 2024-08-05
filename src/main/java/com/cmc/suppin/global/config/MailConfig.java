@@ -8,7 +8,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Component
@@ -26,8 +27,9 @@ public class MailConfig {
             helper.setSubject("Suppin 인증번호");
 
             // Format the current date and time
-            String formattedDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm"));
-
+            String formattedDateTime = ZonedDateTime.now(ZoneId.of("Asia/Seoul"))
+                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm"));
+            
             // Use StringBuilder to construct the HTML email body
             StringBuilder emailBody = new StringBuilder();
             emailBody.append("<!DOCTYPE html>")
