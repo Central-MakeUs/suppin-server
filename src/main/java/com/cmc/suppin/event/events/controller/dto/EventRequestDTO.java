@@ -33,6 +33,8 @@ public class EventRequestDTO {
         @NotEmpty
         private String endDate;
 
+        @NotEmpty
         private String announcementDate;
     }
+
 }

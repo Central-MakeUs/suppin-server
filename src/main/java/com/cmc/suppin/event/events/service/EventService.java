@@ -1,6 +1,7 @@
 package com.cmc.suppin.event.events.service;
 
 import com.cmc.suppin.event.events.controller.dto.EventRequestDTO;
+import com.cmc.suppin.event.events.controller.dto.EventResponseDTO;
 import com.cmc.suppin.event.events.converter.EventConverter;
 import com.cmc.suppin.event.events.domain.Event;
 import com.cmc.suppin.event.events.domain.repository.EventRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +39,7 @@ public class EventService {
         }
     }
 
-    public void createEvent(EventRequestDTO.CommentEventCreateDTO request, String userId) {
+    public void createCommentEvent(EventRequestDTO.CommentEventCreateDTO request, String userId) {
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
@@ -45,5 +47,15 @@ public class EventService {
         event.setMember(member);
         event.setStatus(EventStatus.PROCESSING);
         eventRepository.save(event);
+    }
+
+    public List<EventResponseDTO.EventInfoDTO> getAllEvents(String userId) {
+        Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        List<Event> events = eventRepository.findByMemberId(member.getId());
+        return events.stream()
+                .map(EventConverter::toEventInfoDTO)
+                .collect(Collectors.toList());
     }
 }
