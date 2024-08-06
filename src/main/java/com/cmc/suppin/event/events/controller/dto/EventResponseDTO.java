@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
+
 public class EventResponseDTO {
 
     @Builder
@@ -17,7 +19,7 @@ public class EventResponseDTO {
         private Long eventId;
         private EventType type;
         private String title;
-        private String url;
+        private Optional<String> url;
         private String startDate;
         private String endDate;
         private String announcementDate;

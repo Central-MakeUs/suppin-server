@@ -8,13 +8,14 @@ import com.cmc.suppin.member.domain.Member;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 public class EventConverter {
 
     public static Event toCommentEventEntity(EventRequestDTO.CommentEventCreateDTO request, Member member) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return Event.builder()
-                .type(request.getType())
+                .type(EventType.COMMENT)
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .url(request.getUrl())
@@ -28,7 +29,7 @@ public class EventConverter {
     public static Event toSurveyEventEntity(EventRequestDTO.SurveyEventCreateDTO request, Member member) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return Event.builder()
-                .type(request.getType())
+                .type(EventType.SURVEY)
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .startDate(LocalDate.parse(request.getStartDate(), formatter).atStartOfDay())
@@ -53,9 +54,9 @@ public class EventConverter {
     public static EventResponseDTO.EventInfoDTO toEventInfoDTO(Event event) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        String url = null;
+        Optional<String> url = Optional.empty();
         if (event.getType() == EventType.COMMENT) {
-            url = event.getUrl();
+            url = Optional.ofNullable(event.getUrl());
         }
 
         return EventResponseDTO.EventInfoDTO.builder()
