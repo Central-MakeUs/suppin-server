@@ -73,6 +73,7 @@ public class MemberService {
 
         // DTO를 Entity로 변환
         Member member = memberConverter.toEntity(request, passwordEncoder);
+        member.setStatus(UserStatus.ACTIVE);
 
         // 회원 정보 저장
         memberRepository.save(member);
