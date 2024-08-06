@@ -3,11 +3,18 @@ package com.cmc.suppin.event.survey.domain;
 import com.cmc.suppin.answer.domain.Answer;
 import com.cmc.suppin.global.enums.QuestionType;
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
+@Builder
+@DynamicInsert
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

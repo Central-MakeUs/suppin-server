@@ -1,14 +1,21 @@
 package com.cmc.suppin.event.survey.domain;
 
 import com.cmc.suppin.answer.domain.AnonymousParticipant;
-import com.cmc.suppin.event.domain.Event;
+import com.cmc.suppin.event.events.domain.Event;
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
+@Builder
+@DynamicInsert
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Survey extends BaseDateTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

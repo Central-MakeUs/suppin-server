@@ -1,11 +1,18 @@
-package com.cmc.suppin.comment.domain;
+package com.cmc.suppin.event.crawl.domain;
 
-import com.cmc.suppin.event.domain.Event;
+import com.cmc.suppin.event.events.domain.Event;
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 
 
 @Entity
+@Getter
+@Builder
+@DynamicInsert
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Comment extends BaseDateTimeEntity {
 
     @Id
@@ -19,9 +26,14 @@ public class Comment extends BaseDateTimeEntity {
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String url;
-    @Column(columnDefinition = "VARCHAR(30)", nullable = false)
-    private String nickname;
+
+    @Column(nullable = false)
+    private String author;
+
     @Column(columnDefinition = "TEXT", nullable = false)
     private String commentText;
+
+    @Column(nullable = false)
+    private String commentDate;
 
 }
