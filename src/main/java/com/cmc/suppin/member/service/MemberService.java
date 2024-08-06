@@ -41,16 +41,6 @@ public class MemberService {
     private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final MailConfig mailConfig;
 
-    public boolean requestEmailVerification(String email) {
-        String code = generateVerificationCode();
-        saveVerificationToken(email, code);
-        return mailConfig.sendMail(email, code);
-    }
-
-    public boolean verifyEmailCode(String email, String code) {
-        return verifyToken(email, code);
-    }
-
     /**
      * 회원가입
      */
@@ -140,6 +130,45 @@ public class MemberService {
         }
     }
 
+    /**
+     * 이메일 인증번호 요청
+     */
+    public boolean requestEmailVerification(String email) {
+        String code = generateVerificationCode();
+        saveVerificationToken(email, code);
+        return mailConfig.sendMail(email, code);
+    }
+
+    public boolean verifyEmailCode(String email, String code) {
+        boolean isValid = verifyToken(email, code);
+        if (!isValid) {
+            throw new IllegalArgumentException("이메일 인증에 실패하였습니다.");
+        }
+        return isValid;
+    }
+
+    private boolean verifyToken(String email, String token) {
+        Optional<EmailVerificationToken> verificationTokenOpt = emailVerificationTokenRepository.findByEmailAndToken(email, token);
+        if (verificationTokenOpt.isPresent()) {
+            EmailVerificationToken verificationToken = verificationTokenOpt.get();
+            boolean isNotExpired = !verificationToken.isExpired();
+            return isNotExpired;
+        }
+        return false;
+    }
+
+    private void saveVerificationToken(String email, String code) {
+        EmailVerificationToken verificationToken = EmailVerificationToken.builder()
+                .email(email)
+                .token(code)
+                .expiryDate(LocalDateTime.now().plusMinutes(5))
+                .build();
+
+        emailVerificationTokenRepository.deleteByEmail(email);
+        emailVerificationTokenRepository.save(verificationToken);
+    }
+    
+
     private Member getMember(Long memberId) {
         return memberRepository.findByIdAndStatusNot(memberId, UserStatus.DELETED)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
@@ -166,26 +195,6 @@ public class MemberService {
         SecureRandom random = new SecureRandom();
         int code = random.nextInt(900000) + 100000; // 6자리 숫자 생성 (100000 ~ 999999)
         return String.valueOf(code);
-    }
-
-    private void saveVerificationToken(String email, String code) {
-        EmailVerificationToken verificationToken = EmailVerificationToken.builder()
-                .email(email)
-                .token(code)
-                .expiryDate(LocalDateTime.now().plusMinutes(5))
-                .build();
-
-        emailVerificationTokenRepository.deleteByEmail(email);
-        emailVerificationTokenRepository.save(verificationToken);
-    }
-
-    private boolean verifyToken(String email, String token) {
-        Optional<EmailVerificationToken> verificationTokenOpt = emailVerificationTokenRepository.findByEmailAndToken(email, token);
-        if (verificationTokenOpt.isPresent()) {
-            EmailVerificationToken verificationToken = verificationTokenOpt.get();
-            return !verificationToken.isExpired();
-        }
-        return false;
     }
 
     /**
