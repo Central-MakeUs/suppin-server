@@ -31,9 +31,11 @@ public class Event extends BaseDateTimeEntity {
     private Member member;
 
     @OneToMany(mappedBy = "event")
+    @Builder.Default
     private List<Survey> surveyList = new ArrayList<>();
 
     @OneToMany(mappedBy = "event")
+    @Builder.Default
     private List<Comment> commentList = new ArrayList<>();
 
     @Column(columnDefinition = "VARCHAR(100)", nullable = false)
