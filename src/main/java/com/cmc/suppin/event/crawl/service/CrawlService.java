@@ -1,8 +1,13 @@
 package com.cmc.suppin.event.crawl.service;
 
-import com.cmc.suppin.event.crawl.controller.dto.CrawlResponseDTO;
+import com.cmc.suppin.event.crawl.converter.CommentConverter;
 import com.cmc.suppin.event.crawl.domain.Comment;
 import com.cmc.suppin.event.crawl.domain.repository.CommentRepository;
+import com.cmc.suppin.event.events.domain.Event;
+import com.cmc.suppin.event.events.domain.repository.EventRepository;
+import com.cmc.suppin.global.enums.UserStatus;
+import com.cmc.suppin.member.domain.Member;
+import com.cmc.suppin.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -16,9 +21,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -28,11 +31,26 @@ import java.util.Set;
 public class CrawlService {
 
     private final CommentRepository commentRepository;
+    private final EventRepository eventRepository;
+    private final MemberRepository memberRepository;
 
-    public List<CrawlResponseDTO.CrawlResultDTO> crawlYoutubeComments(String url, String userId) {
+    public void crawlYoutubeComments(String url, Long eventId, String userId) {
+        log.info("Start crawling comments for URL: {} by user: {}", url, userId);
+
+        Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        log.info("Member found: {}", member.getId());
+
+        Event event = eventRepository.findByIdAndMemberId(eventId, member.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+
+        log.info("Event found: {}", event.getId());
+
         System.setProperty("webdriver.chrome.driver", "src/main/resources/drivers/chromedriver");
 
         ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
         options.addArguments("--disable-gpu");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
@@ -41,7 +59,6 @@ public class CrawlService {
         WebDriver driver = new ChromeDriver(options);
         driver.get(url);
 
-        List<CrawlResponseDTO.CrawlResultDTO> commentList = new ArrayList<>();
         Set<String> uniqueComments = new HashSet<>();
 
         try {
@@ -65,25 +82,16 @@ public class CrawlService {
 
                     if (!uniqueComments.contains(text)) {
                         uniqueComments.add(text);
-                        commentList.add(new CrawlResponseDTO.CrawlResultDTO(author, text, time));
 
                         // 엔티티 저장
-                        Comment comment = Comment.builder()
-                                .author(author)
-                                .commentText(text)
-                                .commentDate(time)
-                                .url(url)
-                                .build();
+                        Comment comment = CommentConverter.toCommentEntity(author, text, time, url, event);
                         commentRepository.save(comment);
+                        log.info("Comment saved: {}", comment.getId());
                     }
                 }
             }
-
-            return commentList;
-
         } catch (InterruptedException e) {
             e.printStackTrace();
-            return new ArrayList<>();
         } finally {
             driver.quit();
         }
