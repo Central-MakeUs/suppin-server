@@ -53,6 +53,7 @@ public class EventConverter {
     public static EventResponseDTO.EventInfoDTO toEventInfoDTO(Event event) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return EventResponseDTO.EventInfoDTO.builder()
+                .eventId(event.getId())
                 .type(event.getType())
                 .title(event.getTitle())
                 .url(event.getUrl())

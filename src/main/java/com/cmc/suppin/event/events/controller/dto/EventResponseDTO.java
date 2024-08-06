@@ -14,6 +14,7 @@ public class EventResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class EventInfoDTO {
+        private Long eventId;
         private EventType type;
         private String title;
         private String url;

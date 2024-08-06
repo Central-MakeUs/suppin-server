@@ -80,4 +80,14 @@ public class EventService {
         updatedEvent.setId(event.getId());  // 유지하려는 ID 설정
         eventRepository.save(updatedEvent);
     }
+
+    public void deleteEvent(Long eventId, String userId) {
+        Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        Event event = eventRepository.findByIdAndMemberId(eventId, member.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+
+        eventRepository.delete(event);
+    }
 }
