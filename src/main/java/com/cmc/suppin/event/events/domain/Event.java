@@ -69,4 +69,8 @@ public class Event extends BaseDateTimeEntity {
     public void setStatus(EventStatus status) {
         this.status = status;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

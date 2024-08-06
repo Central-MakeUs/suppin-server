@@ -37,7 +37,7 @@ public class EventApi {
 
     @PostMapping("/new/comment/crawling")
     @Operation(summary = "댓글 이벤트 생성 API",
-            description = "request : type(ENUM 타입으로, 'COMMENT와 SURVEY' 둘 중 하나를 입력해주시면 됩니다), " +
+            description = "Request : type(ENUM 타입으로, 'COMMENT와 SURVEY' 둘 중 하나를 입력해주시면 됩니다), " +
                     "title, description, url, startDate(yyyy-MM-dd), endDate(yyyy-MM-dd), announcementDate(yyyy-MM-dd)")
     public ResponseEntity<ApiResponse<Void>> createCommentEvent(@RequestBody @Valid EventRequestDTO.CommentEventCreateDTO request, @CurrentAccount Account account) {
         eventService.createCommentEvent(request, account.userId());
@@ -46,10 +46,17 @@ public class EventApi {
 
     @PostMapping("/new/survey")
     @Operation(summary = "설문조사 이벤트 생성 API",
-            description = "request : type(ENUM 타입으로, 'COMMENT와 SURVEY' 둘 중 하나를 입력해주시면 됩니다), " +
+            description = "Request : type(ENUM 타입으로, 'COMMENT와 SURVEY' 둘 중 하나를 입력해주시면 됩니다), " +
                     "title, description, startDate(yyyy-MM-dd), endDate(yyyy-MM-dd), announcementDate(yyyy-MM-dd)")
     public ResponseEntity<ApiResponse<Void>> createSurveyEvent(@RequestBody @Valid EventRequestDTO.SurveyEventCreateDTO request, @CurrentAccount Account account) {
         eventService.createSurveyEvent(request, account.userId());
+        return ResponseEntity.ok(ApiResponse.of(ResponseCode.SUCCESS));
+    }
+
+    @PutMapping("/{eventId}/update")
+    @Operation(summary = "이벤트 수정 API", description = "PathVariable: eventId, Request : title, description, url, startDate, endDate, announcementDate")
+    public ResponseEntity<ApiResponse<Void>> updateEvent(@PathVariable Long eventId, @RequestBody @Valid EventRequestDTO.EventUpdateDTO request, @CurrentAccount Account account) {
+        eventService.updateEvent(eventId, request, account.userId());
         return ResponseEntity.ok(ApiResponse.of(ResponseCode.SUCCESS));
     }
 }

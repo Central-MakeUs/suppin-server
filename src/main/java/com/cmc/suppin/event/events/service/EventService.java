@@ -68,4 +68,16 @@ public class EventService {
         event.setStatus(EventStatus.PROCESSING);
         eventRepository.save(event);
     }
+
+    public void updateEvent(Long eventId, EventRequestDTO.EventUpdateDTO request, String userId) {
+        Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        Event event = eventRepository.findByIdAndMemberId(eventId, member.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+
+        Event updatedEvent = EventConverter.toUpdatedEventEntity(request, member);
+        updatedEvent.setId(event.getId());  // 유지하려는 ID 설정
+        eventRepository.save(updatedEvent);
+    }
 }
