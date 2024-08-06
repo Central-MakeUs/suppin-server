@@ -49,24 +49,24 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    public void createCommentEvent(EventRequestDTO.CommentEventCreateDTO request, String userId) {
+    public Event createCommentEvent(EventRequestDTO.CommentEventCreateDTO request, String userId) {
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
         Event event = EventConverter.toCommentEventEntity(request, member);
         event.setMember(member);
         event.setStatus(EventStatus.PROCESSING);
-        eventRepository.save(event);
+        return eventRepository.save(event);
     }
 
-    public void createSurveyEvent(EventRequestDTO.SurveyEventCreateDTO request, String userId) {
+    public Event createSurveyEvent(EventRequestDTO.SurveyEventCreateDTO request, String userId) {
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
         Event event = EventConverter.toSurveyEventEntity(request, member);
         event.setMember(member);
         event.setStatus(EventStatus.PROCESSING);
-        eventRepository.save(event);
+        return eventRepository.save(event);
     }
 
     public void updateEvent(Long eventId, EventRequestDTO.EventUpdateDTO request, String userId) {

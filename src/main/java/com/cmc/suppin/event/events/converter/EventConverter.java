@@ -52,11 +52,17 @@ public class EventConverter {
 
     public static EventResponseDTO.EventInfoDTO toEventInfoDTO(Event event) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        String url = null;
+        if (event.getType() == EventType.COMMENT) {
+            url = event.getUrl();
+        }
+
         return EventResponseDTO.EventInfoDTO.builder()
                 .eventId(event.getId())
                 .type(event.getType())
                 .title(event.getTitle())
-                .url(event.getUrl())
+                .url(url)
                 .startDate(event.getStartDate().format(formatter))
                 .endDate(event.getEndDate().format(formatter))
                 .announcementDate(event.getAnnouncementDate().format(formatter))
