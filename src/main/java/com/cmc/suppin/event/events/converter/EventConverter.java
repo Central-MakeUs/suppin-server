@@ -15,11 +15,24 @@ public class EventConverter {
         return Event.builder()
                 .type(request.getType())
                 .title(request.getTitle())
+                .description(request.getDescription())
                 .url(request.getUrl())
                 .startDate(LocalDate.parse(request.getStartDate(), formatter).atStartOfDay())
                 .endDate(LocalDate.parse(request.getEndDate(), formatter).atStartOfDay())
                 .announcementDate(LocalDate.parse(request.getAnnouncementDate(), formatter).atStartOfDay())
+                .member(member)
+                .build();
+    }
+
+    public static Event toSurveyEventEntity(EventRequestDTO.SurveyEventCreateDTO request, Member member) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return Event.builder()
+                .type(request.getType())
+                .title(request.getTitle())
                 .description(request.getDescription())
+                .startDate(LocalDate.parse(request.getStartDate(), formatter).atStartOfDay())
+                .endDate(LocalDate.parse(request.getEndDate(), formatter).atStartOfDay())
+                .announcementDate(LocalDate.parse(request.getAnnouncementDate(), formatter).atStartOfDay())
                 .member(member)
                 .build();
     }
@@ -51,4 +64,6 @@ public class EventConverter {
                 .status(event.getStatus())
                 .build();
     }
+
+
 }

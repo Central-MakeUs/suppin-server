@@ -39,6 +39,16 @@ public class EventService {
         }
     }
 
+    public List<EventResponseDTO.EventInfoDTO> getAllEvents(String userId) {
+        Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        List<Event> events = eventRepository.findByMemberId(member.getId());
+        return events.stream()
+                .map(EventConverter::toEventInfoDTO)
+                .collect(Collectors.toList());
+    }
+
     public void createCommentEvent(EventRequestDTO.CommentEventCreateDTO request, String userId) {
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
@@ -49,13 +59,13 @@ public class EventService {
         eventRepository.save(event);
     }
 
-    public List<EventResponseDTO.EventInfoDTO> getAllEvents(String userId) {
+    public void createSurveyEvent(EventRequestDTO.SurveyEventCreateDTO request, String userId) {
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
-        List<Event> events = eventRepository.findByMemberId(member.getId());
-        return events.stream()
-                .map(EventConverter::toEventInfoDTO)
-                .collect(Collectors.toList());
+        Event event = EventConverter.toSurveyEventEntity(request, member);
+        event.setMember(member);
+        event.setStatus(EventStatus.PROCESSING);
+        eventRepository.save(event);
     }
 }

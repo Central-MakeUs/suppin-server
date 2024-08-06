@@ -37,4 +37,27 @@ public class EventRequestDTO {
         private String announcementDate;
     }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class SurveyEventCreateDTO {
+        @NotNull
+        private EventType type;
+
+        @NotEmpty
+        private String title;
+
+        @NotEmpty
+        private String description;
+
+        @NotEmpty
+        private String startDate;
+
+        @NotEmpty
+        private String endDate;
+
+        @NotEmpty
+        private String announcementDate;
+    }
 }
