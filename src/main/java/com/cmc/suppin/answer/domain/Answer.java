@@ -1,13 +1,20 @@
 package com.cmc.suppin.answer.domain;
 
+import com.cmc.suppin.event.survey.domain.Question;
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
-import com.cmc.suppin.survey.domain.Question;
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
+@Builder
+@DynamicInsert
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Answer extends BaseDateTimeEntity {
 
     @Id

@@ -1,6 +1,6 @@
 package com.cmc.suppin.member.domain;
 
-import com.cmc.suppin.event.domain.Event;
+import com.cmc.suppin.event.events.domain.Event;
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
 import com.cmc.suppin.global.enums.UserRole;
 import com.cmc.suppin.global.enums.UserStatus;
@@ -13,6 +13,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
