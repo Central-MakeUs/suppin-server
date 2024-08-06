@@ -39,7 +39,7 @@ public class Event extends BaseDateTimeEntity {
     @Column(columnDefinition = "VARCHAR(100)", nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -66,6 +66,11 @@ public class Event extends BaseDateTimeEntity {
         member.getEventList().add(this);
     }
 
-    // Getters and Setters
+    public void setStatus(EventStatus status) {
+        this.status = status;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
