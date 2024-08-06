@@ -5,30 +5,34 @@ import com.cmc.suppin.event.events.controller.dto.EventResponseDTO;
 import com.cmc.suppin.event.events.domain.Event;
 import com.cmc.suppin.member.domain.Member;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class EventConverter {
 
     public static Event toCommentEventEntity(EventRequestDTO.CommentEventCreateDTO request, Member member) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return Event.builder()
                 .type(request.getType())
                 .title(request.getTitle())
                 .url(request.getUrl())
-                .startDate(LocalDateTime.parse(request.getStartDate()))
-                .endDate(LocalDateTime.parse(request.getEndDate()))
-                .announcementDate(LocalDateTime.parse(request.getAnnouncementDate()))
+                .startDate(LocalDate.parse(request.getStartDate(), formatter).atStartOfDay())
+                .endDate(LocalDate.parse(request.getEndDate(), formatter).atStartOfDay())
+                .announcementDate(LocalDate.parse(request.getAnnouncementDate(), formatter).atStartOfDay())
+                .description(request.getDescription())
                 .member(member)
                 .build();
     }
 
     public static EventResponseDTO.CommentEventDetailDTO toEventDetailDTO(Event event) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return EventResponseDTO.CommentEventDetailDTO.builder()
                 .type(event.getType())
                 .title(event.getTitle())
                 .url(event.getUrl())
-                .startDate(event.getStartDate().toString())
-                .endDate(event.getEndDate().toString())
-                .announcementDate(event.getAnnouncementDate().toString())
+                .startDate(event.getStartDate().format(formatter))
+                .endDate(event.getEndDate().format(formatter))
+                .announcementDate(event.getAnnouncementDate().format(formatter))
                 .build();
     }
 }
