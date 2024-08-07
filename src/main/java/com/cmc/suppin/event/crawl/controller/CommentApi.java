@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -41,5 +43,18 @@ public class CommentApi {
             @CurrentAccount Account account) {
         CommentResponseDTO.CrawledCommentListDTO comments = commentService.getComments(eventId, url, page, size, account.userId());
         return ResponseEntity.ok(ApiResponse.of(comments));
+    }
+
+    @GetMapping("/draft-winners")
+    @Operation(summary = "조건별 당첨자 추첨 API", description = "주어진 조건에 따라 이벤트의 당첨자를 추첨합니다.")
+    public ResponseEntity<ApiResponse<List<CommentResponseDTO.WinnerResponseDTO>>> drawWinners(
+            @RequestParam Long eventId,
+            @RequestParam String startDate,
+            @RequestParam String endDate,
+            @RequestParam int winnerCount,
+            @RequestParam List<String> keywords,
+            @CurrentAccount Account account) {
+        List<CommentResponseDTO.WinnerResponseDTO> winners = commentService.drawWinners(eventId, startDate, endDate, winnerCount, keywords, account.userId());
+        return ResponseEntity.ok(ApiResponse.of(winners));
     }
 }

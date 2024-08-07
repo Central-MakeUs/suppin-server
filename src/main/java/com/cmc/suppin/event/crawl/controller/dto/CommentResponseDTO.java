@@ -29,4 +29,14 @@ public class CommentResponseDTO {
         private String commentText;
         private String commentDate;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class WinnerResponseDTO {
+        private String author;
+        private String commentText;
+        private String commentDate;
+    }
 }

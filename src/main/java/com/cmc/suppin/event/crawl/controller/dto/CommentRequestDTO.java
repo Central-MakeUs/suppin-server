@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 public class CommentRequestDTO {
 
     @Getter
@@ -16,5 +18,17 @@ public class CommentRequestDTO {
         private String url;
         private int page;
         private int size;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class WinnerRequestDTO {
+        private Long eventId;
+        private String startDate;
+        private String endDate;
+        private int winnerCount;
+        private List<String> keywords;
     }
 }
