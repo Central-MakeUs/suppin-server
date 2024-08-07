@@ -38,7 +38,7 @@ public class CommentService {
         Event event = eventRepository.findByIdAndMemberId(eventId, member.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("commentDate").descending());
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("commentDate").descending());
         Page<Comment> comments = commentRepository.findByEventIdAndUrlAndCommentDateBefore(eventId, url, event.getEndDate(), pageable);
 
         int totalComments = commentRepository.countByEventIdAndUrl(eventId, url);
