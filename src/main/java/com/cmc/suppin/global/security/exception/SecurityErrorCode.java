@@ -1,5 +1,6 @@
-package com.cmc.suppin.global.exception;
+package com.cmc.suppin.global.security.exception;
 
+import com.cmc.suppin.global.exception.BaseErrorCode;
 import com.cmc.suppin.global.response.ErrorResponse;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

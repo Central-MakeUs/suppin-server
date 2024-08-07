@@ -2,7 +2,6 @@ package com.cmc.suppin.member.service;
 
 import com.cmc.suppin.global.config.MailConfig;
 import com.cmc.suppin.global.enums.UserStatus;
-import com.cmc.suppin.global.exception.MemberErrorCode;
 import com.cmc.suppin.global.security.jwt.JwtTokenProvider;
 import com.cmc.suppin.global.security.user.UserDetailsImpl;
 import com.cmc.suppin.member.controller.dto.MemberRequestDTO;
@@ -13,6 +12,7 @@ import com.cmc.suppin.member.domain.Member;
 import com.cmc.suppin.member.domain.TermsAgree;
 import com.cmc.suppin.member.domain.repository.EmailVerificationTokenRepository;
 import com.cmc.suppin.member.domain.repository.MemberRepository;
+import com.cmc.suppin.member.exception.MemberErrorCode;
 import com.cmc.suppin.member.exception.MemberException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

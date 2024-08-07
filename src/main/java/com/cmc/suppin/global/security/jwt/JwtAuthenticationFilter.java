@@ -1,6 +1,6 @@
 package com.cmc.suppin.global.security.jwt;
 
-import com.cmc.suppin.global.exception.SecurityErrorCode;
+import com.cmc.suppin.global.security.exception.SecurityErrorCode;
 import com.cmc.suppin.global.security.util.HttpResponseUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;

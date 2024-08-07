@@ -1,6 +1,6 @@
 package com.cmc.suppin.global.security.util;
 
-import com.cmc.suppin.global.exception.SecurityErrorCode;
+import com.cmc.suppin.global.security.exception.SecurityErrorCode;
 import com.cmc.suppin.global.security.exception.SecurityException;
 import com.cmc.suppin.global.security.reslover.Account;
 import com.cmc.suppin.global.security.user.UserDetailsImpl;
