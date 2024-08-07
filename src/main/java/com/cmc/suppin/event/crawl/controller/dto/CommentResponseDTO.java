@@ -39,4 +39,12 @@ public class CommentResponseDTO {
         private String commentText;
         private String commentDate;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class KeywordFilteredWinnerResponseDTO {
+        private List<WinnerResponseDTO> winners;
+    }
 }

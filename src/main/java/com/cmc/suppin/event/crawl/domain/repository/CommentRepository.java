@@ -21,6 +21,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     int countByEventIdAndUrl(Long eventId, String url);
 
-
     List<Comment> findByEventIdAndCommentDateBetween(Long eventId, LocalDateTime start, LocalDateTime end);
+
+    List<Comment> findByEventIdAndCommentTextContaining(Long eventId, String keyword);
 }

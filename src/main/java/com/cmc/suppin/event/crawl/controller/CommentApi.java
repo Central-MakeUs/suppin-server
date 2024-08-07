@@ -46,7 +46,7 @@ public class CommentApi {
     }
 
     @GetMapping("/draft-winners")
-    @Operation(summary = "조건별 당첨자 추첨 API", description = "주어진 조건에 따라 이벤트의 당첨자를 추첨합니다.")
+    @Operation(summary = "조건별 당첨자 추첨 API", description = "주어진 조건에 따라 이벤트의 당첨자를 추첨합니다. 키워드 조건은 OR 조건으로 적용됩니다.")
     public ResponseEntity<ApiResponse<List<CommentResponseDTO.WinnerResponseDTO>>> drawWinners(
             @RequestParam Long eventId,
             @RequestParam String startDate,
@@ -56,5 +56,15 @@ public class CommentApi {
             @CurrentAccount Account account) {
         List<CommentResponseDTO.WinnerResponseDTO> winners = commentService.drawWinners(eventId, startDate, endDate, winnerCount, keywords, account.userId());
         return ResponseEntity.ok(ApiResponse.of(winners));
+    }
+
+    @GetMapping("/winners/keywordFiltering")
+    @Operation(summary = "키워드별 당첨자 조회 API", description = "주어진 키워드에 따라 1차 랜덤 추첨된 당첨자 중에서 키워드가 포함된 당첨자들을 조회합니다. 해당 API에서 요청 키워드 갯수는 1개입니다.")
+    public ResponseEntity<ApiResponse<List<CommentResponseDTO.WinnerResponseDTO>>> getWinnersByKeyword(
+            @RequestParam Long eventId,
+            @RequestParam String keyword,
+            @CurrentAccount Account account) {
+        List<CommentResponseDTO.WinnerResponseDTO> filteredWinners = commentService.getCommentsByKeyword(eventId, keyword, account.userId());
+        return ResponseEntity.ok(ApiResponse.of(filteredWinners));
     }
 }

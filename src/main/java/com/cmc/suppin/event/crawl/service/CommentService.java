@@ -88,4 +88,25 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
+    // 키워드별 댓글 조회
+    public List<CommentResponseDTO.WinnerResponseDTO> getCommentsByKeyword(Long eventId, String keyword, String userId) {
+        Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        Event event = eventRepository.findByIdAndMemberId(eventId, member.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+
+        List<Comment> comments = commentRepository.findByEventIdAndCommentTextContaining(eventId, keyword);
+
+        return comments.stream()
+                .map(CommentConverter::toWinnerResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<CommentResponseDTO.WinnerResponseDTO> filterWinnersByKeyword(List<CommentResponseDTO.WinnerResponseDTO> winners, String keyword) {
+        return winners.stream()
+                .filter(winner -> winner.getCommentText().contains(keyword))
+                .collect(Collectors.toList());
+    }
+
 }

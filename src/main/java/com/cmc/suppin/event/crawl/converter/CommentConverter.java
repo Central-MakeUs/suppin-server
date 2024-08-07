@@ -41,5 +41,13 @@ public class CommentConverter {
                 .comments(commentDetailDTOS)
                 .build();
     }
+
+    public static CommentResponseDTO.WinnerResponseDTO toWinnerResponseDTO(Comment comment) {
+        return CommentResponseDTO.WinnerResponseDTO.builder()
+                .author(comment.getAuthor())
+                .commentText(comment.getCommentText())
+                .commentDate(comment.getCommentDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                .build();
+    }
 }
 
