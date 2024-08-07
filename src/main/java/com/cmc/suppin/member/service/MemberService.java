@@ -10,6 +10,7 @@ import com.cmc.suppin.member.controller.dto.MemberResponseDTO;
 import com.cmc.suppin.member.converter.MemberConverter;
 import com.cmc.suppin.member.domain.EmailVerificationToken;
 import com.cmc.suppin.member.domain.Member;
+import com.cmc.suppin.member.domain.TermsAgree;
 import com.cmc.suppin.member.domain.repository.EmailVerificationTokenRepository;
 import com.cmc.suppin.member.domain.repository.MemberRepository;
 import com.cmc.suppin.member.exception.MemberException;
@@ -62,8 +63,12 @@ public class MemberService {
         }
 
         // DTO를 Entity로 변환
-        Member member = memberConverter.toEntity(request, passwordEncoder);
+        Member member = memberConverter.toMemberEntity(request, passwordEncoder);
         member.setStatus(UserStatus.ACTIVE);
+
+        // 약관 동의 항목 처리
+        TermsAgree termsAgree = memberConverter.toTermsAgreeEntity(request.getTermsAgree(), member);
+        member.addTermsAgree(termsAgree);
 
         // 회원 정보 저장
         memberRepository.save(member);
@@ -167,7 +172,7 @@ public class MemberService {
         emailVerificationTokenRepository.deleteByEmail(email);
         emailVerificationTokenRepository.save(verificationToken);
     }
-    
+
 
     private Member getMember(Long memberId) {
         return memberRepository.findByIdAndStatusNot(memberId, UserStatus.DELETED)
