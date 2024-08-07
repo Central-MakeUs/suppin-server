@@ -6,6 +6,7 @@ import com.cmc.suppin.event.events.converter.EventConverter;
 import com.cmc.suppin.event.events.domain.Event;
 import com.cmc.suppin.event.events.domain.repository.EventRepository;
 import com.cmc.suppin.global.enums.EventStatus;
+import com.cmc.suppin.global.enums.EventType;
 import com.cmc.suppin.global.enums.UserStatus;
 import com.cmc.suppin.member.domain.Member;
 import com.cmc.suppin.member.domain.repository.MemberRepository;
@@ -49,24 +50,32 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    public void createCommentEvent(EventRequestDTO.CommentEventCreateDTO request, String userId) {
+    public Event createCommentEvent(EventRequestDTO.CommentEventCreateDTO request, String userId) {
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        if (request.getType() != EventType.COMMENT) {
+            throw new IllegalArgumentException("Event type must be COMMENT");
+        }
 
         Event event = EventConverter.toCommentEventEntity(request, member);
         event.setMember(member);
         event.setStatus(EventStatus.PROCESSING);
-        eventRepository.save(event);
+        return eventRepository.save(event);
     }
 
-    public void createSurveyEvent(EventRequestDTO.SurveyEventCreateDTO request, String userId) {
+    public Event createSurveyEvent(EventRequestDTO.SurveyEventCreateDTO request, String userId) {
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        if (request.getType() != EventType.SURVEY) {
+            throw new IllegalArgumentException("Event type must be SURVEY");
+        }
 
         Event event = EventConverter.toSurveyEventEntity(request, member);
         event.setMember(member);
         event.setStatus(EventStatus.PROCESSING);
-        eventRepository.save(event);
+        return eventRepository.save(event);
     }
 
     public void updateEvent(Long eventId, EventRequestDTO.EventUpdateDTO request, String userId) {

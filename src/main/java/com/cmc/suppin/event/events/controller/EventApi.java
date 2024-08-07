@@ -2,6 +2,8 @@ package com.cmc.suppin.event.events.controller;
 
 import com.cmc.suppin.event.events.controller.dto.EventRequestDTO;
 import com.cmc.suppin.event.events.controller.dto.EventResponseDTO;
+import com.cmc.suppin.event.events.converter.EventConverter;
+import com.cmc.suppin.event.events.domain.Event;
 import com.cmc.suppin.event.events.service.EventService;
 import com.cmc.suppin.global.response.ApiResponse;
 import com.cmc.suppin.global.response.ResponseCode;
@@ -38,19 +40,23 @@ public class EventApi {
     @PostMapping("/new/comment/crawling")
     @Operation(summary = "댓글 이벤트 생성 API",
             description = "Request : type(ENUM 타입으로, 'COMMENT와 SURVEY' 둘 중 하나를 입력해주시면 됩니다), " +
-                    "title, description, url, startDate(yyyy-MM-dd), endDate(yyyy-MM-dd), announcementDate(yyyy-MM-dd)")
-    public ResponseEntity<ApiResponse<Void>> createCommentEvent(@RequestBody @Valid EventRequestDTO.CommentEventCreateDTO request, @CurrentAccount Account account) {
-        eventService.createCommentEvent(request, account.userId());
-        return ResponseEntity.ok(ApiResponse.of(ResponseCode.SUCCESS));
+                    "title, description, url, startDate(yyyy-MM-dd), endDate(yyyy-MM-dd), announcementDate(yyyy-MM-dd)<br><br>" +
+                    "Response로 제공되는 eventId를 이용하여 타 API들을 호출해주시면 됩니다.")
+    public ResponseEntity<ApiResponse<EventResponseDTO.EventInfoDTO>> createCommentEvent(@RequestBody @Valid EventRequestDTO.CommentEventCreateDTO request, @CurrentAccount Account account) {
+        Event event = eventService.createCommentEvent(request, account.userId());
+        EventResponseDTO.EventInfoDTO response = EventConverter.toEventInfoDTO(event);
+        return ResponseEntity.ok(ApiResponse.of(response));
     }
 
     @PostMapping("/new/survey")
     @Operation(summary = "설문조사 이벤트 생성 API",
             description = "Request : type(ENUM 타입으로, 'COMMENT와 SURVEY' 둘 중 하나를 입력해주시면 됩니다), " +
-                    "title, description, startDate(yyyy-MM-dd), endDate(yyyy-MM-dd), announcementDate(yyyy-MM-dd)")
-    public ResponseEntity<ApiResponse<Void>> createSurveyEvent(@RequestBody @Valid EventRequestDTO.SurveyEventCreateDTO request, @CurrentAccount Account account) {
-        eventService.createSurveyEvent(request, account.userId());
-        return ResponseEntity.ok(ApiResponse.of(ResponseCode.SUCCESS));
+                    "title, description, startDate(yyyy-MM-dd), endDate(yyyy-MM-dd), announcementDate(yyyy-MM-dd)<br><br>" +
+                    "Response로 제공되는 eventId를 이용하여 타 API들을 호출해주시면 됩니다.")
+    public ResponseEntity<ApiResponse<EventResponseDTO.EventInfoDTO>> createSurveyEvent(@RequestBody @Valid EventRequestDTO.SurveyEventCreateDTO request, @CurrentAccount Account account) {
+        Event event = eventService.createSurveyEvent(request, account.userId());
+        EventResponseDTO.EventInfoDTO response = EventConverter.toEventInfoDTO(event);
+        return ResponseEntity.ok(ApiResponse.of(response));
     }
 
     @PutMapping("/{eventId}/update")

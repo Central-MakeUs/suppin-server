@@ -35,8 +35,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 "http://localhost:3000",
                 "https://localhost:3000",
                 "https://dev.suppin.store",
+                "https://api.suppin.store",
                 "https://suppin.store",
-                "http://192.168.0.100:3000" // 모바일 디바이스의 IP 주소
+                "http://192.168.200.120:3000",  // 테스트 디바이스 IP 허용
+                "https://coherent-midge-probably.ngrok-free.app"
         ).toArray(String[]::new);
     }
 }
