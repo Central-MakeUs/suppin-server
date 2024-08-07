@@ -18,4 +18,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     Page<Comment> findByEventIdAndUrlAndCommentDateBefore(Long eventId, String url, LocalDateTime endDate, Pageable pageable);
 
     List<Comment> findByUrlAndEventId(String url, Long eventId);
+
+    int countByEventIdAndUrl(Long eventId, String url);
 }

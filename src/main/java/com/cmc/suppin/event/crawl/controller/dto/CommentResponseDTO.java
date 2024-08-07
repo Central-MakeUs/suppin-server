@@ -14,6 +14,7 @@ public class CommentResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CrawledCommentListDTO {
+        private int totalCommentCount;
         private int participantCount;
         private String crawlTime;
         private List<CommentDetailDTO> comments;

@@ -29,12 +29,13 @@ public class CommentConverter {
                 .build();
     }
 
-    public static CommentResponseDTO.CrawledCommentListDTO toCommentListDTO(List<Comment> comments, String crawlTime) {
+    public static CommentResponseDTO.CrawledCommentListDTO toCommentListDTO(List<Comment> comments, String crawlTime, int totalComments) {
         List<CommentResponseDTO.CommentDetailDTO> commentDetailDTOS = comments.stream()
                 .map(CommentConverter::toCommentDetailDTO)
                 .collect(Collectors.toList());
 
         return CommentResponseDTO.CrawledCommentListDTO.builder()
+                .totalCommentCount(totalComments)
                 .participantCount(commentDetailDTOS.size())
                 .crawlTime(crawlTime)
                 .comments(commentDetailDTOS)

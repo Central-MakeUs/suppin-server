@@ -41,8 +41,10 @@ public class CommentService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("commentDate").descending());
         Page<Comment> comments = commentRepository.findByEventIdAndUrlAndCommentDateBefore(eventId, url, event.getEndDate(), pageable);
 
+        int totalComments = commentRepository.countByEventIdAndUrl(eventId, url);
+
         String crawlTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 
-        return CommentConverter.toCommentListDTO(comments.getContent(), crawlTime);
+        return CommentConverter.toCommentListDTO(comments.getContent(), crawlTime, totalComments);
     }
 }
