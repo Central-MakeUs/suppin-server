@@ -39,6 +39,7 @@ public class MemberConverter {
                 .userId(member.getUserId())
                 .name(member.getName())
                 .email(member.getEmail())
+                .phoneNumber(member.getPhoneNumber())
                 .createdAt(LocalDateTime.now())
                 .build();
     }

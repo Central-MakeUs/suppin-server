@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -67,6 +68,10 @@ public class MemberService {
         member.setStatus(UserStatus.ACTIVE);
 
         // 약관 동의 항목 처리
+        // termsAgreeList 초기화
+        if (member.getTermsAgreeList() == null) {
+            member.setTermsAgreeList(new ArrayList<>());
+        }
         TermsAgree termsAgree = memberConverter.toTermsAgreeEntity(request.getTermsAgree(), member);
         member.addTermsAgree(termsAgree);
 
