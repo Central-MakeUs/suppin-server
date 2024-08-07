@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -36,12 +37,22 @@ public class CrawlService {
     private final EventRepository eventRepository;
     private final MemberRepository memberRepository;
 
-    public void crawlYoutubeComments(String url, Long eventId, String userId) {
+    public String crawlYoutubeComments(String url, Long eventId, String userId) {
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
         Event event = eventRepository.findByIdAndMemberId(eventId, member.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+
+        // 기존 댓글 검증
+        List<Comment> existingComments = commentRepository.findByUrl(url);
+        if (!existingComments.isEmpty()) {
+            LocalDateTime firstCommentDate = existingComments.get(0).getCreatedAt();
+            return "이미 " + firstCommentDate.toLocalDate() + " 일자에 수집했던 댓글이 있습니다.";
+        }
+
+        // 기존 댓글 삭제
+        commentRepository.deleteByUrl(url);
 
         System.setProperty("webdriver.chrome.driver", "src/main/resources/drivers/chromedriver");
 
@@ -51,6 +62,11 @@ public class CrawlService {
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--remote-allow-origins=*");
+        options.addArguments("--window-size=1920,1080"); // 크롤링 시 해상도 설정
+        options.addArguments("--disable-extensions"); // 확장 프로그램 비활성화
+        options.addArguments("--disable-infobars"); // 정보 바 비활성화
+        options.addArguments("--disable-browser-side-navigation"); // 브라우저 측 내비게이션 비활성화
+        options.addArguments("--disable-software-rasterizer"); // 소프트웨어 래스터라이저 비활성화
 
         WebDriver driver = new ChromeDriver(options);
         driver.get(url);
@@ -58,13 +74,14 @@ public class CrawlService {
         Set<String> uniqueComments = new HashSet<>();
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(5000); // 초기 로딩 대기
 
-            long endTime = System.currentTimeMillis() + 120000;
+            long endTime = System.currentTimeMillis() + 240000; // 스크롤 시간 조정 (필요에 따라 조정)
             JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
 
             while (System.currentTimeMillis() < endTime) {
                 jsExecutor.executeScript("window.scrollTo(0, document.documentElement.scrollHeight);");
+
                 Thread.sleep(1000);
 
                 String pageSource = driver.getPageSource();
@@ -91,6 +108,8 @@ public class CrawlService {
         } finally {
             driver.quit();
         }
+
+        return "댓글 수집이 완료되었습니다.";
     }
 }
 

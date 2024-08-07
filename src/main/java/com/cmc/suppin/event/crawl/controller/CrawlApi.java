@@ -29,9 +29,9 @@ public class CrawlApi {
     // 유튜브 크롤링
     @GetMapping("/crawling/comments")
     @Operation(summary = "유튜브 댓글 크롤링 API", description = "주어진 URL의 유튜브 댓글을 크롤링하고 DB에 저장합니다.")
-    public ResponseEntity<ApiResponse<Void>> crawlYoutubeComments(@RequestParam String url, @RequestParam Long eventId, @CurrentAccount Account account) {
-        crawlService.crawlYoutubeComments(url, eventId, account.userId());
-        return ResponseEntity.ok(ApiResponse.of(ResponseCode.SUCCESS));
+    public ResponseEntity<ApiResponse<String>> crawlYoutubeComments(@RequestParam String url, @RequestParam Long eventId, @CurrentAccount Account account) {
+        String message = crawlService.crawlYoutubeComments(url, eventId, account.userId());
+        return ResponseEntity.ok(ApiResponse.of(ResponseCode.SUCCESS, message));
     }
 
     // TODO: 인스타그램 게시글 크롤링
