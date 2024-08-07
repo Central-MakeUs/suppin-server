@@ -13,7 +13,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findByUrl(String url);
 
-    void deleteByUrl(String url);
+    void deleteByUrlAndEventId(String url, Long eventId);
 
     Page<Comment> findByEventIdAndUrlAndCommentDateBefore(Long eventId, String url, LocalDateTime endDate, Pageable pageable);
+
+    List<Comment> findByUrlAndEventId(String url, Long eventId);
 }

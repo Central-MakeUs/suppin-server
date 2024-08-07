@@ -4,6 +4,8 @@ import com.cmc.suppin.event.crawl.converter.CommentConverter;
 import com.cmc.suppin.event.crawl.converter.DateConverter;
 import com.cmc.suppin.event.crawl.domain.Comment;
 import com.cmc.suppin.event.crawl.domain.repository.CommentRepository;
+import com.cmc.suppin.event.crawl.exception.CrawlErrorCode;
+import com.cmc.suppin.event.crawl.exception.CrawlException;
 import com.cmc.suppin.event.events.domain.Event;
 import com.cmc.suppin.event.events.domain.repository.EventRepository;
 import com.cmc.suppin.global.enums.UserStatus;
@@ -37,23 +39,43 @@ public class CrawlService {
     private final EventRepository eventRepository;
     private final MemberRepository memberRepository;
 
-    public String crawlYoutubeComments(String url, Long eventId, String userId) {
+    public String checkExistingComments(String url, Long eventId, String userId) {
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
         Event event = eventRepository.findByIdAndMemberId(eventId, member.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
 
-        // 기존 댓글 검증
-        List<Comment> existingComments = commentRepository.findByUrl(url);
+        List<Comment> existingComments = commentRepository.findByUrlAndEventId(url, eventId);
         if (!existingComments.isEmpty()) {
             LocalDateTime firstCommentDate = existingComments.get(0).getCreatedAt();
-            return "이미 " + firstCommentDate.toLocalDate() + " 일자에 수집했던 댓글이 있습니다.";
+            return "동일한 URL의 댓글을 " + firstCommentDate.toLocalDate() + " 일자에 수집한 이력이 있습니다.";
         }
 
-        // 기존 댓글 삭제
-        commentRepository.deleteByUrl(url);
+        return null;
+    }
 
+    public void crawlYoutubeComments(String url, Long eventId, String userId, boolean forceUpdate) {
+        Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        Event event = eventRepository.findByIdAndMemberId(eventId, member.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+
+        if (forceUpdate) {
+            // 기존 댓글 삭제
+            commentRepository.deleteByUrlAndEventId(url, eventId);
+        } else {
+            // 기존 댓글이 존재하는 경우: 크롤링을 중지하고 예외를 던집니다.
+            // 기존 댓글이 존재하지 않는 경우: 새로운 댓글을 크롤링하고 이를 DB에 저장합니다.
+
+            List<Comment> existingComments = commentRepository.findByUrlAndEventId(url, eventId);
+            if (!existingComments.isEmpty()) {
+                throw new CrawlException(CrawlErrorCode.DUPLICATE_URL);
+            }
+        }
+
+        // 크롤링 코드 실행 (생략)
         System.setProperty("webdriver.chrome.driver", "src/main/resources/drivers/chromedriver");
 
         ChromeOptions options = new ChromeOptions();
@@ -62,11 +84,11 @@ public class CrawlService {
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--remote-allow-origins=*");
-        options.addArguments("--window-size=1920,1080"); // 크롤링 시 해상도 설정
-        options.addArguments("--disable-extensions"); // 확장 프로그램 비활성화
-        options.addArguments("--disable-infobars"); // 정보 바 비활성화
-        options.addArguments("--disable-browser-side-navigation"); // 브라우저 측 내비게이션 비활성화
-        options.addArguments("--disable-software-rasterizer"); // 소프트웨어 래스터라이저 비활성화
+        options.addArguments("--window-size=1920,1080");
+        options.addArguments("--disable-extensions");
+        options.addArguments("--disable-infobars");
+        options.addArguments("--disable-browser-side-navigation");
+        options.addArguments("--disable-software-rasterizer");
 
         WebDriver driver = new ChromeDriver(options);
         driver.get(url);
@@ -108,8 +130,6 @@ public class CrawlService {
         } finally {
             driver.quit();
         }
-
-        return "댓글 수집이 완료되었습니다.";
     }
 }
 
