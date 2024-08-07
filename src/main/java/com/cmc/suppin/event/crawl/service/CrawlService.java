@@ -1,6 +1,7 @@
 package com.cmc.suppin.event.crawl.service;
 
 import com.cmc.suppin.event.crawl.converter.CommentConverter;
+import com.cmc.suppin.event.crawl.converter.DateConverter;
 import com.cmc.suppin.event.crawl.domain.Comment;
 import com.cmc.suppin.event.crawl.domain.repository.CommentRepository;
 import com.cmc.suppin.event.events.domain.Event;
@@ -21,6 +22,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,17 +37,11 @@ public class CrawlService {
     private final MemberRepository memberRepository;
 
     public void crawlYoutubeComments(String url, Long eventId, String userId) {
-        log.info("Start crawling comments for URL: {} by user: {}", url, userId);
-
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
-        log.info("Member found: {}", member.getId());
-
         Event event = eventRepository.findByIdAndMemberId(eventId, member.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
-
-        log.info("Event found: {}", event.getId());
 
         System.setProperty("webdriver.chrome.driver", "src/main/resources/drivers/chromedriver");
 
@@ -84,9 +80,9 @@ public class CrawlService {
                         uniqueComments.add(text);
 
                         // 엔티티 저장
-                        Comment comment = CommentConverter.toCommentEntity(author, text, time, url, event);
+                        LocalDateTime actualCommentDate = DateConverter.convertRelativeTime(time);
+                        Comment comment = CommentConverter.toCommentEntity(author, text, actualCommentDate, url, event);
                         commentRepository.save(comment);
-                        log.info("Comment saved: {}", comment.getId());
                     }
                 }
             }
@@ -97,3 +93,4 @@ public class CrawlService {
         }
     }
 }
+
