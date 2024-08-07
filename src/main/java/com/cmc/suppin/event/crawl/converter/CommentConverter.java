@@ -42,11 +42,16 @@ public class CommentConverter {
                 .build();
     }
 
-    public static CommentResponseDTO.WinnerResponseDTO toWinnerResponseDTO(Comment comment) {
+    public static CommentResponseDTO.WinnerResponseDTO toWinnerResponseDTO(List<Comment> winners, int winnerCount, String startDate, String endDate) {
+        List<CommentResponseDTO.CommentDetailDTO> winnerDetails = winners.stream()
+                .map(CommentConverter::toCommentDetailDTO)
+                .collect(Collectors.toList());
+
         return CommentResponseDTO.WinnerResponseDTO.builder()
-                .author(comment.getAuthor())
-                .commentText(comment.getCommentText())
-                .commentDate(comment.getCommentDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                .winnerCount(winnerCount)
+                .startDate(startDate)
+                .endDate(endDate)
+                .winners(winnerDetails)
                 .build();
     }
 }

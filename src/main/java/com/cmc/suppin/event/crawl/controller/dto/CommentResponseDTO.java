@@ -35,16 +35,9 @@ public class CommentResponseDTO {
     @AllArgsConstructor
     @Builder
     public static class WinnerResponseDTO {
-        private String author;
-        private String commentText;
-        private String commentDate;
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class KeywordFilteredWinnerResponseDTO {
-        private List<WinnerResponseDTO> winners;
+        private int winnerCount;
+        private String startDate;
+        private String endDate;
+        private List<CommentDetailDTO> winners;
     }
 }

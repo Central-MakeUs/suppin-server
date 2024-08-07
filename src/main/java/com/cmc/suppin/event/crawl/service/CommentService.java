@@ -55,7 +55,7 @@ public class CommentService {
     }
 
     // 당첨자 조건별 랜덤 추첨
-    public List<CommentResponseDTO.WinnerResponseDTO> drawWinners(Long eventId, String startDate, String endDate, int winnerCount, List<String> keywords, String userId) {
+    public CommentResponseDTO.WinnerResponseDTO drawWinners(Long eventId, String startDate, String endDate, int winnerCount, List<String> keywords, String userId) {
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
@@ -83,13 +83,12 @@ public class CommentService {
         Collections.shuffle(filteredComments);
         List<Comment> winners = filteredComments.stream().limit(winnerCount).collect(Collectors.toList());
 
-        return winners.stream()
-                .map(comment -> new CommentResponseDTO.WinnerResponseDTO(comment.getAuthor(), comment.getCommentText(), comment.getCommentDate().toString()))
-                .collect(Collectors.toList());
+        return CommentConverter.toWinnerResponseDTO(winners, winnerCount, startDate, endDate);
     }
 
+
     // 키워드별 댓글 조회
-    public List<CommentResponseDTO.WinnerResponseDTO> getCommentsByKeyword(Long eventId, String keyword, String userId) {
+    public List<CommentResponseDTO.CommentDetailDTO> getCommentsByKeyword(Long eventId, String keyword, String userId) {
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
@@ -99,11 +98,11 @@ public class CommentService {
         List<Comment> comments = commentRepository.findByEventIdAndCommentTextContaining(eventId, keyword);
 
         return comments.stream()
-                .map(CommentConverter::toWinnerResponseDTO)
+                .map(CommentConverter::toCommentDetailDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<CommentResponseDTO.WinnerResponseDTO> filterWinnersByKeyword(List<CommentResponseDTO.WinnerResponseDTO> winners, String keyword) {
+    public List<CommentResponseDTO.CommentDetailDTO> filterWinnersByKeyword(List<CommentResponseDTO.CommentDetailDTO> winners, String keyword) {
         return winners.stream()
                 .filter(winner -> winner.getCommentText().contains(keyword))
                 .collect(Collectors.toList());
