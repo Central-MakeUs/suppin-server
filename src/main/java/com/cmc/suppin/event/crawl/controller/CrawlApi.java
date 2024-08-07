@@ -41,7 +41,10 @@ public class CrawlApi {
     @PostMapping("/crawling/comments")
     @Operation(summary = "유튜브 댓글 크롤링 API",
             description = "주어진 URL의 유튜브 댓글을 크롤링하여 DB에 저장합니다.<br><br>" +
-                    "Request: url: 크롤링할 URL, eventId: 댓글을 수집할 eventId, forceUpdate: 댓글을 강제로 업데이트할지 여부(Boolean), Authorization: JWT 토큰을 포함한 인증 헤더")
+                    "Request: url: 크롤링할 URL, eventId: 댓글을 수집할 eventId, forceUpdate: 댓글을 강제로 업데이트할지 여부(Boolean), Authorization: JWT 토큰을 포함한 인증 헤더 <br><br>" +
+                    "forceUpdate 입력 값이 false일 때 설명 <br> " +
+                    "- DB에 기존 댓글이 존재하는 경우: 크롤링을 중지하고 예외를 던집니다. <br>" +
+                    "- DB에 기존 댓글이 존재하지 않는 경우: 새로운 댓글을 크롤링하고 이를 DB에 저장합니다.")
     public ResponseEntity<ApiResponse<String>> crawlYoutubeComments(@RequestParam String url, @RequestParam Long eventId, @RequestParam boolean forceUpdate, @CurrentAccount Account account) {
         crawlService.crawlYoutubeComments(url, eventId, account.userId(), forceUpdate);
         return ResponseEntity.ok(ApiResponse.of(ResponseCode.SUCCESS, "댓글 수집이 완료되었습니다."));
