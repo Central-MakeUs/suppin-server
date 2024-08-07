@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.cmc.suppin.global.exception.MemberErrorCode.MEMBER_ALREADY_DELETED;
-import static com.cmc.suppin.global.exception.MemberErrorCode.MEMBER_NOT_FOUND;
+import static com.cmc.suppin.member.exception.MemberErrorCode.MEMBER_ALREADY_DELETED;
+import static com.cmc.suppin.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor

@@ -41,9 +41,7 @@ public class Member extends BaseDateTimeEntity {
 
     @Column(columnDefinition = "VARCHAR(13)", nullable = false)
     private String phoneNumber;
-
-    private Boolean termsAgree;
-
+    
     @Enumerated(EnumType.STRING)
     private UserRole role;
 

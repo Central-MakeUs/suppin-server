@@ -30,7 +30,7 @@ public class MemberApi {
 
     // 회원가입
     @PostMapping("/join")
-    @Operation(summary = "회원가입 API", description = "request 파라미터 : id, password, name, phone, email")
+    @Operation(summary = "회원가입 API", description = "Request: termsAgree, userId, password, name, phone, email, userType, verificationCode")
     public ResponseEntity<ApiResponse<MemberResponseDTO.JoinResultDTO>> join(@RequestBody @Valid MemberRequestDTO.JoinDTO request) {
         Member member = memberService.join(request);
 

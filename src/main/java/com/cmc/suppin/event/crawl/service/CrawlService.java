@@ -4,6 +4,8 @@ import com.cmc.suppin.event.crawl.converter.CommentConverter;
 import com.cmc.suppin.event.crawl.converter.DateConverter;
 import com.cmc.suppin.event.crawl.domain.Comment;
 import com.cmc.suppin.event.crawl.domain.repository.CommentRepository;
+import com.cmc.suppin.event.crawl.exception.CrawlErrorCode;
+import com.cmc.suppin.event.crawl.exception.CrawlException;
 import com.cmc.suppin.event.events.domain.Event;
 import com.cmc.suppin.event.events.domain.repository.EventRepository;
 import com.cmc.suppin.global.enums.UserStatus;
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -36,13 +39,43 @@ public class CrawlService {
     private final EventRepository eventRepository;
     private final MemberRepository memberRepository;
 
-    public void crawlYoutubeComments(String url, Long eventId, String userId) {
+    public String checkExistingComments(String url, Long eventId, String userId) {
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
         Event event = eventRepository.findByIdAndMemberId(eventId, member.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
 
+        List<Comment> existingComments = commentRepository.findByUrlAndEventId(url, eventId);
+        if (!existingComments.isEmpty()) {
+            LocalDateTime firstCommentDate = existingComments.get(0).getCreatedAt();
+            return "동일한 URL의 댓글을 " + firstCommentDate.toLocalDate() + " 일자에 수집한 이력이 있습니다.";
+        }
+
+        return null;
+    }
+
+    public void crawlYoutubeComments(String url, Long eventId, String userId, boolean forceUpdate) {
+        Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        Event event = eventRepository.findByIdAndMemberId(eventId, member.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+
+        if (forceUpdate) {
+            // 기존 댓글 삭제
+            commentRepository.deleteByUrlAndEventId(url, eventId);
+        } else {
+            // 기존 댓글이 존재하는 경우: 크롤링을 중지하고 예외를 던집니다.
+            // 기존 댓글이 존재하지 않는 경우: 새로운 댓글을 크롤링하고 이를 DB에 저장합니다.
+
+            List<Comment> existingComments = commentRepository.findByUrlAndEventId(url, eventId);
+            if (!existingComments.isEmpty()) {
+                throw new CrawlException(CrawlErrorCode.DUPLICATE_URL);
+            }
+        }
+
+        // 크롤링 코드 실행 (생략)
         System.setProperty("webdriver.chrome.driver", "src/main/resources/drivers/chromedriver");
 
         ChromeOptions options = new ChromeOptions();
@@ -51,6 +84,11 @@ public class CrawlService {
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--remote-allow-origins=*");
+        options.addArguments("--window-size=1920,1080");
+        options.addArguments("--disable-extensions");
+        options.addArguments("--disable-infobars");
+        options.addArguments("--disable-browser-side-navigation");
+        options.addArguments("--disable-software-rasterizer");
 
         WebDriver driver = new ChromeDriver(options);
         driver.get(url);
@@ -58,13 +96,14 @@ public class CrawlService {
         Set<String> uniqueComments = new HashSet<>();
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(5000); // 초기 로딩 대기
 
-            long endTime = System.currentTimeMillis() + 120000;
+            long endTime = System.currentTimeMillis() + 240000; // 스크롤 시간 조정 (필요에 따라 조정)
             JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
 
             while (System.currentTimeMillis() < endTime) {
                 jsExecutor.executeScript("window.scrollTo(0, document.documentElement.scrollHeight);");
+
                 Thread.sleep(1000);
 
                 String pageSource = driver.getPageSource();
