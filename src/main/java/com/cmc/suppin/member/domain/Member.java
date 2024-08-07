@@ -24,7 +24,7 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Event> eventList = new ArrayList<>();
 
     @Column(columnDefinition = "VARCHAR(30)", nullable = false)
@@ -50,13 +50,15 @@ public class Member extends BaseDateTimeEntity {
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
-    // 추가된 생성자
-    public Member(String name, String password, String email, String phoneNumber, UserRole role) {
-        this.name = name;
-        this.password = password;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.role = role;
+    @Column(columnDefinition = "VARCHAR(50)", nullable = false)
+    private String userType;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<TermsAgree> termsAgreeList = new ArrayList<>();
+
+    public void addTermsAgree(TermsAgree termsAgree) {
+        termsAgree.setMember(this);
+        this.termsAgreeList.add(termsAgree);
     }
 
     public boolean isDeleted() {

@@ -3,6 +3,7 @@ package com.cmc.suppin.member.controller.dto;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +15,9 @@ public class MemberRequestDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class JoinDTO {
+
+        private TermsAgreeDTO termsAgree;
+
         @NotBlank(message = "아이디를 입력해주세요")
         @Id
         private String userId;
@@ -32,8 +36,27 @@ public class MemberRequestDTO {
         @NotBlank(message = "휴대폰 번호를 입력해주세요")
         private String phone;
 
+        private String userType;
+
         @NotBlank(message = "이메일 인증번호를 입력해주세요")
         private String verificationCode;
+
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TermsAgreeDTO {
+        @NotNull(message = "14세 이상 동의 여부를 선택해주세요")
+        private Boolean ageOver14Agree;
+
+        @NotNull(message = "서비스 이용 동의 여부를 선택해주세요")
+        private Boolean serviceUseAgree;
+
+        @NotNull(message = "개인정보 수집 및 이용 동의 여부를 선택해주세요")
+        private Boolean personalInfoAgree;
+
+        private Boolean marketingAgree; // 선택 사항
     }
 
     @Getter
