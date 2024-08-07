@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 
+import java.time.LocalDateTime;
+
 
 @Entity
 @Getter
@@ -34,6 +36,6 @@ public class Comment extends BaseDateTimeEntity {
     private String commentText;
 
     @Column(nullable = false)
-    private String commentDate;
+    private LocalDateTime commentDate;
 
 }
