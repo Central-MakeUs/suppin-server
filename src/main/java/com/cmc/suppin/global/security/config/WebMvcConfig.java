@@ -24,7 +24,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*") // TODO: 2024-08-07 개발용으로 모든 도메인 허용, 운영 시 아래 주석 해제
+                .allowedOriginPatterns("*") // TODO: 2024-08-07 개발용으로 모든 도메인 허용, 운영 시 아래 주석 해제
 //                .allowedOrigins(getAllowOrigins())
                 .allowedHeaders("Authorization", "Cache-Control", "Content-Type")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
