@@ -25,12 +25,23 @@ public class AnonymousParticipant extends BaseDateTimeEntity {
     @JoinColumn(name = "survey_id")
     private Survey survey;
 
-    @Column(columnDefinition = "VARCHAR(13)", nullable = false)
+    @OneToMany(mappedBy = "anonymousParticipant")
+    private List<Answer> answerList = new ArrayList<>();
+
+    private String name;
+
+    private String address;
+
+    private String email;
+
+    @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private String phoneNumber;
 
     @Column(nullable = false)
     private Boolean isAgreed;
 
-    @OneToMany(mappedBy = "anonymousParticipant")
-    private List<Answer> answerList = new ArrayList<>();
+    private Boolean isWinner;
+
+    private Boolean isChecked;
+
 }
