@@ -208,4 +208,13 @@ public class SurveyService {
 
         return SurveyConverter.toWinnerDetailDTO(participant, answers);
     }
+
+    public void deleteWinners(Long surveyId) {
+        List<AnonymousParticipant> participants = anonymousParticipantRepository.findBySurveyIdAndIsWinnerTrue(surveyId);
+
+        for (AnonymousParticipant participant : participants) {
+            participant.setIsWinner(false);
+            anonymousParticipantRepository.save(participant);
+        }
+    }
 }
