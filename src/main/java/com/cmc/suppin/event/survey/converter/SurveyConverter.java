@@ -2,6 +2,7 @@ package com.cmc.suppin.event.survey.converter;
 
 import com.cmc.suppin.event.events.domain.Event;
 import com.cmc.suppin.event.survey.controller.dto.SurveyRequestDTO;
+import com.cmc.suppin.event.survey.controller.dto.SurveyResponseDTO;
 import com.cmc.suppin.event.survey.domain.PersonalInfoCollectOption;
 import com.cmc.suppin.event.survey.domain.Question;
 import com.cmc.suppin.event.survey.domain.QuestionOption;
@@ -42,5 +43,34 @@ public class SurveyConverter {
                         .survey(survey)
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public static SurveyResponseDTO.SurveyResultDTO toSurveyResultDTO(Survey survey, Event event) {
+        List<SurveyResponseDTO.SurveyResultDTO.PersonalInfoOptionDTO> personalInfoOptions = survey.getPersonalInfoList().stream()
+                .map(option -> SurveyResponseDTO.SurveyResultDTO.PersonalInfoOptionDTO.builder()
+                        .optionName(option.getOptionName())
+                        .build())
+                .collect(Collectors.toList());
+
+        List<SurveyResponseDTO.SurveyResultDTO.QuestionDTO> questions = survey.getQuestionList().stream()
+                .map(question -> SurveyResponseDTO.SurveyResultDTO.QuestionDTO.builder()
+                        .questionType(question.getQuestionType())
+                        .questionText(question.getQuestionText())
+                        .options(question.getQuestionOptionList().stream()
+                                .map(QuestionOption::getOptionText)
+                                .collect(Collectors.toList()))
+                        .build())
+                .collect(Collectors.toList());
+
+        return SurveyResponseDTO.SurveyResultDTO.builder()
+                .eventId(event.getId())
+                .eventTitle(event.getTitle())
+                .eventDescription(event.getDescription())
+                .startDate(event.getStartDate().toString())
+                .endDate(event.getEndDate().toString())
+                .announcementDate(event.getAnnouncementDate().toString())
+                .personalInfoOptions(personalInfoOptions)
+                .questions(questions)
+                .build();
     }
 }

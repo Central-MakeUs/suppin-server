@@ -3,6 +3,7 @@ package com.cmc.suppin.event.survey.service;
 import com.cmc.suppin.event.events.domain.Event;
 import com.cmc.suppin.event.events.domain.repository.EventRepository;
 import com.cmc.suppin.event.survey.controller.dto.SurveyRequestDTO;
+import com.cmc.suppin.event.survey.controller.dto.SurveyResponseDTO;
 import com.cmc.suppin.event.survey.converter.SurveyConverter;
 import com.cmc.suppin.event.survey.domain.PersonalInfoCollectOption;
 import com.cmc.suppin.event.survey.domain.Question;
@@ -37,7 +38,7 @@ public class SurveyService {
     private final EventRepository eventRepository;
 
     @Transactional
-    public void createSurvey(SurveyRequestDTO.SurveyCreateDTO request, String userId) {
+    public Long createSurvey(SurveyRequestDTO.SurveyCreateDTO request, String userId) {
         // 사용자 식별
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
@@ -46,21 +47,20 @@ public class SurveyService {
         Event event = eventRepository.findByIdAndMemberId(request.getEventId(), member.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Event not found or does not belong to the user"));
 
-
         // Survey 엔티티 생성 및 저장
         Survey survey = SurveyConverter.toSurveyEntity(event);
-        surveyRepository.save(survey);
+        Survey savedSurvey = surveyRepository.save(survey);
 
         // 각 개인정보 항목 처리 및 저장
         if (request.getPersonalInfoOptionList() != null && !request.getPersonalInfoOptionList().isEmpty()) {
             List<PersonalInfoCollectOption> personalInfoOptions = SurveyConverter.toPersonalInfoCollectOptionEntities(
-                    request.getPersonalInfoOptionList().stream().map(SurveyRequestDTO.SurveyCreateDTO.PersonalInfoOptionDTO::getOptionName).collect(Collectors.toList()), survey);
+                    request.getPersonalInfoOptionList().stream().map(SurveyRequestDTO.SurveyCreateDTO.PersonalInfoOptionDTO::getOptionName).collect(Collectors.toList()), savedSurvey);
             personalInfoCollectOptionRepository.saveAll(personalInfoOptions);
         }
 
         // 각 질문 처리 및 저장
         for (SurveyRequestDTO.SurveyCreateDTO.QuestionDTO questionDTO : request.getQuestionList()) {
-            Question question = SurveyConverter.toQuestionEntity(questionDTO, survey);
+            Question question = SurveyConverter.toQuestionEntity(questionDTO, savedSurvey);
             questionRepository.save(question);
 
             // 객관식 복수 선택 질문인 경우 처리 및 저장
@@ -69,5 +69,16 @@ public class SurveyService {
                 questionOptionRepository.saveAll(options);
             }
         }
+
+        return savedSurvey.getId(); // 저장된 설문의 ID 반환
+    }
+
+    @Transactional(readOnly = true)
+    public SurveyResponseDTO.SurveyResultDTO getSurvey(Long surveyId) {
+        Survey survey = surveyRepository.findById(surveyId)
+                .orElseThrow(() -> new IllegalArgumentException("Survey not found"));
+
+        Event event = survey.getEvent();
+        return SurveyConverter.toSurveyResultDTO(survey, event);
     }
 }
