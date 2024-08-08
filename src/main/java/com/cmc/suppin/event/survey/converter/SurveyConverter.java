@@ -4,6 +4,7 @@ import com.cmc.suppin.event.events.domain.Event;
 import com.cmc.suppin.event.survey.controller.dto.SurveyRequestDTO;
 import com.cmc.suppin.event.survey.controller.dto.SurveyResponseDTO;
 import com.cmc.suppin.event.survey.domain.*;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,6 +73,26 @@ public class SurveyConverter {
                 .build();
     }
 
+    public static SurveyResponseDTO.SurveyAnswerResultDTO toSurveyAnswerResultDTO(Question question, Page<Answer> answersPage) {
+        List<SurveyResponseDTO.SurveyAnswerResultDTO.AnswerDTO> answers = answersPage.stream()
+                .map(answer -> SurveyResponseDTO.SurveyAnswerResultDTO.AnswerDTO.builder()
+                        .participantName(answer.getAnonymousParticipant().getName())
+                        .answerText(answer.getAnswerText())
+                        .selectedOptions(answer.getAnswerOptionList().stream()
+                                .map(answerOption -> answerOption.getQuestionOption().getOptionText())
+                                .collect(Collectors.toList()))
+                        .build())
+                .collect(Collectors.toList());
+
+        return SurveyResponseDTO.SurveyAnswerResultDTO.builder()
+                .questionId(question.getId())
+                .questionText(question.getQuestionText())
+                .answers(answers)
+                .totalPages(answersPage.getTotalPages())
+                .totalElements(answersPage.getTotalElements())
+                .build();
+    }
+
     public static AnonymousParticipant toAnonymousParticipant(SurveyRequestDTO.SurveyAnswerDTO.ParticipantDTO dto, Survey survey) {
         return AnonymousParticipant.builder()
                 .survey(survey)
@@ -87,7 +108,7 @@ public class SurveyConverter {
         return Answer.builder()
                 .question(question)
                 .anonymousParticipant(participant)
-                .answerText(dto.getAnswerText() != null ? dto.getAnswerText() : "")
+                .answerText(dto.getAnswerText())
                 .build();
     }
 
@@ -95,24 +116,6 @@ public class SurveyConverter {
         return AnswerOption.builder()
                 .answer(answer)
                 .questionOption(questionOption)
-                .build();
-    }
-
-    public static SurveyResponseDTO.SurveyAnswerResultDTO toSurveyAnswerResultDTO(Question question, List<Answer> answers) {
-        List<SurveyResponseDTO.SurveyAnswerResultDTO.AnswerDTO> answerDTOs = answers.stream()
-                .map(answer -> SurveyResponseDTO.SurveyAnswerResultDTO.AnswerDTO.builder()
-                        .participantName(answer.getAnonymousParticipant().getName())
-                        .answerText(answer.getAnswerText())
-                        .selectedOptions(answer.getAnswerOptionList().stream()
-                                .map(answerOption -> answerOption.getQuestionOption().getOptionText())
-                                .collect(Collectors.toList()))
-                        .build())
-                .collect(Collectors.toList());
-
-        return SurveyResponseDTO.SurveyAnswerResultDTO.builder()
-                .questionId(question.getId())
-                .questionText(question.getQuestionText())
-                .answers(answerDTOs)
                 .build();
     }
 }

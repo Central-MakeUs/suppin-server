@@ -14,6 +14,9 @@ import com.cmc.suppin.member.domain.Member;
 import com.cmc.suppin.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -122,9 +125,9 @@ public class SurveyService {
         }
     }
 
-    // 설문 응답 결과 조회
+    // 질문별 설문 응답 결과 조회
     @Transactional(readOnly = true)
-    public SurveyResponseDTO.SurveyAnswerResultDTO getSurveyAnswers(Long surveyId, Long questionId, String userId) {
+    public SurveyResponseDTO.SurveyAnswerResultDTO getSurveyAnswers(Long surveyId, Long questionId, int page, int size, String userId) {
         // 사용자 식별
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
@@ -132,8 +135,9 @@ public class SurveyService {
         Question question = questionRepository.findByIdAndSurveyId(questionId, surveyId)
                 .orElseThrow(() -> new IllegalArgumentException("Question not found for the given survey"));
 
-        List<Answer> answers = answerRepository.findByQuestionId(questionId);
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Answer> answersPage = answerRepository.findByQuestionId(questionId, pageable);
 
-        return SurveyConverter.toSurveyAnswerResultDTO(question, answers);
+        return SurveyConverter.toSurveyAnswerResultDTO(question, answersPage);
     }
 }

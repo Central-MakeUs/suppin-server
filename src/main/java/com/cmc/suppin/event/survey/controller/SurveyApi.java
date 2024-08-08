@@ -50,8 +50,13 @@ public class SurveyApi {
 
     @GetMapping("/{surveyId}/answers/{questionId}")
     @Operation(summary = "질문별 설문 응답 결과 조회 API", description = "Request: 설문지 ID와 질문 ID, Response: 해당 질문에 대한 응답 리스트")
-    public ResponseEntity<ApiResponse<SurveyResponseDTO.SurveyAnswerResultDTO>> getSurveyAnswers(@PathVariable Long surveyId, @PathVariable Long questionId, @CurrentAccount Account account) {
-        SurveyResponseDTO.SurveyAnswerResultDTO response = surveyService.getSurveyAnswers(surveyId, questionId, account.userId());
+    public ResponseEntity<ApiResponse<SurveyResponseDTO.SurveyAnswerResultDTO>> getSurveyAnswers(
+            @PathVariable Long surveyId,
+            @PathVariable Long questionId,
+            @RequestParam int page,
+            @RequestParam int size,
+            @CurrentAccount Account account) {
+        SurveyResponseDTO.SurveyAnswerResultDTO response = surveyService.getSurveyAnswers(surveyId, questionId, page, size, account.userId());
         return ResponseEntity.ok(ApiResponse.of(response));
     }
 }
