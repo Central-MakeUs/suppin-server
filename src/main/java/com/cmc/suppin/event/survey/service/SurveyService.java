@@ -7,6 +7,8 @@ import com.cmc.suppin.event.survey.controller.dto.SurveyResponseDTO;
 import com.cmc.suppin.event.survey.converter.SurveyConverter;
 import com.cmc.suppin.event.survey.domain.*;
 import com.cmc.suppin.event.survey.domain.repository.*;
+import com.cmc.suppin.event.survey.exception.SurveyErrorCode;
+import com.cmc.suppin.event.survey.exception.SurveyException;
 import com.cmc.suppin.global.enums.UserStatus;
 import com.cmc.suppin.member.domain.Member;
 import com.cmc.suppin.member.domain.repository.MemberRepository;
@@ -90,6 +92,13 @@ public class SurveyService {
     public void saveSurveyAnswers(SurveyRequestDTO.SurveyAnswerDTO request) {
         Survey survey = surveyRepository.findById(request.getSurveyId())
                 .orElseThrow(() -> new IllegalArgumentException("Survey not found"));
+
+        // 중복 핸드폰 번호 체크
+        String phoneNumber = request.getParticipant().getPhoneNumber();
+        boolean exists = anonymousParticipantRepository.existsByPhoneNumberAndSurveyId(phoneNumber, request.getSurveyId());
+        if (exists) {
+            throw new SurveyException(SurveyErrorCode.DUPLICATE_PHONENUMBER);
+        }
 
         AnonymousParticipant participant = SurveyConverter.toAnonymousParticipant(request.getParticipant(), survey);
         anonymousParticipantRepository.save(participant);
