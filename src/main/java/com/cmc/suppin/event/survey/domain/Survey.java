@@ -26,6 +26,8 @@ public class Survey extends BaseDateTimeEntity {
     @JoinColumn(name = "event_id")
     private Event event;
 
+    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PersonalInfoCollectOption> personalInfoList = new ArrayList<>();
 
     @OneToMany(mappedBy = "survey")
     private List<Question> questionList = new ArrayList<>();
