@@ -40,6 +40,7 @@ public class SurveyService {
     private final AnonymousParticipantRepository anonymousParticipantRepository;
     private final AnswerRepository answerRepository;
     private final AnswerOptionRepository answerOptionRepository;
+    private final AnswerCustomRepository answerCustomRepository;
 
     @Transactional
     public SurveyResponseDTO.SurveyCreateResponse createSurvey(SurveyRequestDTO.SurveyCreateDTO request, String userId) {
@@ -161,13 +162,9 @@ public class SurveyService {
                 .collect(Collectors.toList());
 
         // 조건에 맞는 주관식 답변 조회
-        List<Answer> eligibleAnswers = answerRepository.findEligibleAnswers(
-                question.getId(),
-                request.getStartDate(),
-                request.getEndDate(),
-                request.getMinLength(),
-                keywordPatterns
-        );
+        List<Answer> eligibleAnswers = answerCustomRepository.findEligibleAnswers(
+                request.getQuestionId(), request.getStartDate(), request.getEndDate(),
+                request.getMinLength(), request.getKeywords());
 
         // 랜덤 추첨
         Collections.shuffle(eligibleAnswers);
@@ -186,10 +183,29 @@ public class SurveyService {
                 })
                 .collect(Collectors.toList());
 
-        // 선택 기준 생성
+        // 응답시, 조건도 함께 포함해주기 위한 조건 객체 생성
         SurveyResponseDTO.RandomSelectionResponseDTO.SelectionCriteriaDTO criteria = SurveyConverter.toSelectionCriteriaDTO(request);
 
         // 응답 객체 생성
         return SurveyConverter.toRandomSelectionResponseDTO(winners, criteria);
     }
+
+//    @Transactional(readOnly = true)
+//    public SurveyResponseDTO.WinnerDetailDTO getWinnerDetails(Long surveyId, Long participantId) {
+//        AnonymousParticipant participant = anonymousParticipantRepository.findByIdAndSurveyIdAndIsWinnerTrue(participantId, surveyId)
+//                .orElseThrow(() -> new IllegalArgumentException("Winner not found for the given survey"));
+//
+//        // 모든 답변을 조회하여 응답 DTO로 변환
+//        List<SurveyResponseDTO.WinnerDetailDTO.AnswerDetailDTO> answers = participant.getAnswerList().stream()
+//                .map(answer -> SurveyResponseDTO.WinnerDetailDTO.AnswerDetailDTO.builder()
+//                        .questionText(answer.getQuestion().getQuestionText())
+//                        .answerText(answer.getAnswerText())
+//                        .selectedOptions(answer.getAnswerOptionList().stream()
+//                                .map(answerOption -> answerOption.getQuestionOption().getOptionText())
+//                                .collect(Collectors.toList()))
+//                        .build())
+//                .collect(Collectors.toList());
+//
+//        return SurveyConverter.toWinnerDetailDTO(participant, answers);
+//    }
 }
