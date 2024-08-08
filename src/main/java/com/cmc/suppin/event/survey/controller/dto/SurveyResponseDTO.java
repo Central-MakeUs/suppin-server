@@ -51,4 +51,24 @@ public class SurveyResponseDTO {
             private String optionName;
         }
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class SurveyAnswerResultDTO {
+        private Long questionId;
+        private String questionText;
+        private List<AnswerDTO> answers;
+
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        public static class AnswerDTO {
+            private String participantName;
+            private String answerText;
+            private List<String> selectedOptions;
+        }
+    }
 }

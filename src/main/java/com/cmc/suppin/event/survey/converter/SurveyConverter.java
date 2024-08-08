@@ -97,4 +97,22 @@ public class SurveyConverter {
                 .questionOption(questionOption)
                 .build();
     }
+
+    public static SurveyResponseDTO.SurveyAnswerResultDTO toSurveyAnswerResultDTO(Question question, List<Answer> answers) {
+        List<SurveyResponseDTO.SurveyAnswerResultDTO.AnswerDTO> answerDTOs = answers.stream()
+                .map(answer -> SurveyResponseDTO.SurveyAnswerResultDTO.AnswerDTO.builder()
+                        .participantName(answer.getAnonymousParticipant().getName())
+                        .answerText(answer.getAnswerText())
+                        .selectedOptions(answer.getAnswerOptionList().stream()
+                                .map(answerOption -> answerOption.getQuestionOption().getOptionText())
+                                .collect(Collectors.toList()))
+                        .build())
+                .collect(Collectors.toList());
+
+        return SurveyResponseDTO.SurveyAnswerResultDTO.builder()
+                .questionId(question.getId())
+                .questionText(question.getQuestionText())
+                .answers(answerDTOs)
+                .build();
+    }
 }

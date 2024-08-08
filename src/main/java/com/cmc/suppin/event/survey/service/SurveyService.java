@@ -121,4 +121,19 @@ public class SurveyService {
             }
         }
     }
+
+    // 설문 응답 결과 조회
+    @Transactional(readOnly = true)
+    public SurveyResponseDTO.SurveyAnswerResultDTO getSurveyAnswers(Long surveyId, Long questionId, String userId) {
+        // 사용자 식별
+        Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        Question question = questionRepository.findByIdAndSurveyId(questionId, surveyId)
+                .orElseThrow(() -> new IllegalArgumentException("Question not found for the given survey"));
+
+        List<Answer> answers = answerRepository.findByQuestionId(questionId);
+
+        return SurveyConverter.toSurveyAnswerResultDTO(question, answers);
+    }
 }
