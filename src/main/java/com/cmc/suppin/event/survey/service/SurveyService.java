@@ -190,22 +190,22 @@ public class SurveyService {
         return SurveyConverter.toRandomSelectionResponseDTO(winners, criteria);
     }
 
-//    @Transactional(readOnly = true)
-//    public SurveyResponseDTO.WinnerDetailDTO getWinnerDetails(Long surveyId, Long participantId) {
-//        AnonymousParticipant participant = anonymousParticipantRepository.findByIdAndSurveyIdAndIsWinnerTrue(participantId, surveyId)
-//                .orElseThrow(() -> new IllegalArgumentException("Winner not found for the given survey"));
-//
-//        // 모든 답변을 조회하여 응답 DTO로 변환
-//        List<SurveyResponseDTO.WinnerDetailDTO.AnswerDetailDTO> answers = participant.getAnswerList().stream()
-//                .map(answer -> SurveyResponseDTO.WinnerDetailDTO.AnswerDetailDTO.builder()
-//                        .questionText(answer.getQuestion().getQuestionText())
-//                        .answerText(answer.getAnswerText())
-//                        .selectedOptions(answer.getAnswerOptionList().stream()
-//                                .map(answerOption -> answerOption.getQuestionOption().getOptionText())
-//                                .collect(Collectors.toList()))
-//                        .build())
-//                .collect(Collectors.toList());
-//
-//        return SurveyConverter.toWinnerDetailDTO(participant, answers);
-//    }
+    @Transactional(readOnly = true)
+    public SurveyResponseDTO.WinnerDetailDTO getWinnerDetails(Long surveyId, Long participantId) {
+        AnonymousParticipant participant = anonymousParticipantRepository.findByIdAndSurveyIdAndIsWinnerTrue(participantId, surveyId)
+                .orElseThrow(() -> new IllegalArgumentException("Winner not found for the given survey"));
+
+        // 모든 답변을 조회하여 응답 DTO로 변환
+        List<SurveyResponseDTO.WinnerDetailDTO.AnswerDetailDTO> answers = participant.getAnswerList().stream()
+                .map(answer -> SurveyResponseDTO.WinnerDetailDTO.AnswerDetailDTO.builder()
+                        .questionText(answer.getQuestion().getQuestionText())
+                        .answerText(answer.getAnswerText())
+                        .selectedOptions(answer.getAnswerOptionList().stream()
+                                .map(answerOption -> answerOption.getQuestionOption().getOptionText())
+                                .collect(Collectors.toList()))
+                        .build())
+                .collect(Collectors.toList());
+
+        return SurveyConverter.toWinnerDetailDTO(participant, answers);
+    }
 }

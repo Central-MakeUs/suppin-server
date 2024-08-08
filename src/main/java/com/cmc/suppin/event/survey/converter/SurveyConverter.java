@@ -131,6 +131,7 @@ public class SurveyConverter {
 
     public static SurveyResponseDTO.RandomSelectionResponseDTO.WinnerDTO toWinnerDTO(AnonymousParticipant participant, String answerText) {
         return SurveyResponseDTO.RandomSelectionResponseDTO.WinnerDTO.builder()
+                .participantId(participant.getId())
                 .participantName(participant.getName())
                 .answerText(answerText)
                 .build();
@@ -140,6 +141,17 @@ public class SurveyConverter {
         return SurveyResponseDTO.RandomSelectionResponseDTO.builder()
                 .winners(winners)
                 .selectionCriteria(criteria)
+                .build();
+    }
+
+    public static SurveyResponseDTO.WinnerDetailDTO toWinnerDetailDTO(AnonymousParticipant participant, List<SurveyResponseDTO.WinnerDetailDTO.AnswerDetailDTO> answers) {
+        return SurveyResponseDTO.WinnerDetailDTO.builder()
+                .name(participant.getName())
+                .phoneNumber(participant.getPhoneNumber())
+                .address(participant.getAddress())
+                .email(participant.getEmail())
+                .instagramId(participant.getInstagramId())
+                .answers(answers)
                 .build();
     }
 }

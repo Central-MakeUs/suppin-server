@@ -88,6 +88,7 @@ public class SurveyResponseDTO {
         @AllArgsConstructor
         @Builder
         public static class WinnerDTO {
+            private Long participantId;
             private String participantName;
             private String answerText;
         }
@@ -102,6 +103,29 @@ public class SurveyResponseDTO {
             private LocalDateTime endDate;
             private Integer minLength;
             private List<String> keywords;
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class WinnerDetailDTO {
+        private String name;
+        private String phoneNumber;
+        private String address;
+        private String email;
+        private String instagramId;
+        private List<AnswerDetailDTO> answers;
+
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        public static class AnswerDetailDTO {
+            private String questionText;
+            private String answerText;
+            private List<String> selectedOptions; // 객관식 질문의 경우 선택된 옵션 리스트
         }
     }
 }

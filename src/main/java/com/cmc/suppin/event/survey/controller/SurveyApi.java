@@ -67,4 +67,13 @@ public class SurveyApi {
         SurveyResponseDTO.RandomSelectionResponseDTO response = surveyService.selectRandomWinners(request, account.userId());
         return ResponseEntity.ok(ApiResponse.of(response));
     }
+
+    // 당첨자 세부 정보 조회 API
+    @GetMapping("/winners/{surveyId}/{participantId}")
+    @Operation(summary = "당첨자 세부 정보 조회 API", description = "설문 이벤트의 당첨자(익명 참여자) 정보를 조회하며, 해당 참여자가 응답한 모든 설문 내용을 반환합니다.")
+    public ResponseEntity<ApiResponse<SurveyResponseDTO.WinnerDetailDTO>> getWinnerDetails(
+            @PathVariable Long surveyId, @PathVariable Long participantId) {
+        SurveyResponseDTO.WinnerDetailDTO winnerDetails = surveyService.getWinnerDetails(surveyId, participantId);
+        return ResponseEntity.ok(ApiResponse.of(winnerDetails));
+    }
 }
