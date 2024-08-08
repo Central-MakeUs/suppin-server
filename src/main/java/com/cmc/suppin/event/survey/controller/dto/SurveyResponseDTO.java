@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class SurveyResponseDTO {
@@ -71,6 +72,36 @@ public class SurveyResponseDTO {
             private String participantName;
             private String answerText;
             private List<String> selectedOptions;
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class RandomSelectionResponseDTO {
+        private SelectionCriteriaDTO selectionCriteria;
+        private List<WinnerDTO> winners;
+
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        public static class WinnerDTO {
+            private String participantName;
+            private String answerText;
+        }
+
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        public static class SelectionCriteriaDTO {
+            private Integer winnerCount;
+            private LocalDateTime startDate;
+            private LocalDateTime endDate;
+            private Integer minLength;
+            private List<String> keywords;
         }
     }
 }

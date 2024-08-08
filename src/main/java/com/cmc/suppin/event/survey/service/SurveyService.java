@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -139,5 +140,56 @@ public class SurveyService {
         Page<Answer> answersPage = answerRepository.findByQuestionId(questionId, pageable);
 
         return SurveyConverter.toSurveyAnswerResultDTO(question, answersPage);
+    }
+
+    @Transactional
+    public SurveyResponseDTO.RandomSelectionResponseDTO selectRandomWinners(SurveyRequestDTO.RandomSelectionRequestDTO request, String userId) {
+        // 사용자 식별
+        Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        // 설문 및 질문 식별
+        Survey survey = surveyRepository.findById(request.getSurveyId())
+                .orElseThrow(() -> new IllegalArgumentException("Survey not found"));
+
+        Question question = questionRepository.findByIdAndSurveyId(request.getQuestionId(), request.getSurveyId())
+                .orElseThrow(() -> new IllegalArgumentException("Question not found for the given survey"));
+
+        // 키워드를 OR 조건으로 연결
+        List<String> keywordPatterns = request.getKeywords().stream()
+                .map(keyword -> "%" + keyword.toLowerCase() + "%")
+                .collect(Collectors.toList());
+
+        // 조건에 맞는 주관식 답변 조회
+        List<Answer> eligibleAnswers = answerRepository.findEligibleAnswers(
+                question.getId(),
+                request.getStartDate(),
+                request.getEndDate(),
+                request.getMinLength(),
+                keywordPatterns
+        );
+
+        // 랜덤 추첨
+        Collections.shuffle(eligibleAnswers);
+        List<Answer> selectedWinners = eligibleAnswers.stream()
+                .limit(request.getWinnerCount())
+                .collect(Collectors.toList());
+
+        // 당첨자 업데이트 및 WinnerDTO 생성
+        List<SurveyResponseDTO.RandomSelectionResponseDTO.WinnerDTO> winners = selectedWinners.stream()
+                .map(answer -> {
+                    AnonymousParticipant participant = answer.getAnonymousParticipant();
+                    participant.setIsWinner(true); // isWinner 값을 True로 설정
+                    anonymousParticipantRepository.save(participant); // 저장
+
+                    return SurveyConverter.toWinnerDTO(participant, answer.getAnswerText());
+                })
+                .collect(Collectors.toList());
+
+        // 선택 기준 생성
+        SurveyResponseDTO.RandomSelectionResponseDTO.SelectionCriteriaDTO criteria = SurveyConverter.toSelectionCriteriaDTO(request);
+
+        // 응답 객체 생성
+        return SurveyConverter.toRandomSelectionResponseDTO(winners, criteria);
     }
 }

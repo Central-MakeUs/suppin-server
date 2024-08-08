@@ -118,4 +118,28 @@ public class SurveyConverter {
                 .questionOption(questionOption)
                 .build();
     }
+
+    public static SurveyResponseDTO.RandomSelectionResponseDTO.SelectionCriteriaDTO toSelectionCriteriaDTO(SurveyRequestDTO.RandomSelectionRequestDTO request) {
+        return SurveyResponseDTO.RandomSelectionResponseDTO.SelectionCriteriaDTO.builder()
+                .winnerCount(request.getWinnerCount())
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .minLength(request.getMinLength())
+                .keywords(request.getKeywords())
+                .build();
+    }
+
+    public static SurveyResponseDTO.RandomSelectionResponseDTO.WinnerDTO toWinnerDTO(AnonymousParticipant participant, String answerText) {
+        return SurveyResponseDTO.RandomSelectionResponseDTO.WinnerDTO.builder()
+                .participantName(participant.getName())
+                .answerText(answerText)
+                .build();
+    }
+
+    public static SurveyResponseDTO.RandomSelectionResponseDTO toRandomSelectionResponseDTO(List<SurveyResponseDTO.RandomSelectionResponseDTO.WinnerDTO> winners, SurveyResponseDTO.RandomSelectionResponseDTO.SelectionCriteriaDTO criteria) {
+        return SurveyResponseDTO.RandomSelectionResponseDTO.builder()
+                .winners(winners)
+                .selectionCriteria(criteria)
+                .build();
+    }
 }

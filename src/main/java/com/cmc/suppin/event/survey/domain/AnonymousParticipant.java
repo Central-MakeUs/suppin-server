@@ -44,4 +44,8 @@ public class AnonymousParticipant extends BaseDateTimeEntity {
     private Boolean isWinner;
 
     private Boolean isChecked;
+
+    public void setIsWinner(Boolean isWinner) {
+        this.isWinner = isWinner;
+    }
 }

@@ -59,4 +59,12 @@ public class SurveyApi {
         SurveyResponseDTO.SurveyAnswerResultDTO response = surveyService.getSurveyAnswers(surveyId, questionId, page, size, account.userId());
         return ResponseEntity.ok(ApiResponse.of(response));
     }
+
+    @PostMapping("/draft")
+    @Operation(summary = "당첨자 랜덤 추첨 결과 리스트 조회 API(설문 이벤트)", description = "주관식 답변 중 조건을 설정하여 랜덤으로 당첨자를 추첨합니다.")
+    public ResponseEntity<ApiResponse<SurveyResponseDTO.RandomSelectionResponseDTO>> selectRandomWinners(
+            @RequestBody @Valid SurveyRequestDTO.RandomSelectionRequestDTO request, @CurrentAccount Account account) {
+        SurveyResponseDTO.RandomSelectionResponseDTO response = surveyService.selectRandomWinners(request, account.userId());
+        return ResponseEntity.ok(ApiResponse.of(response));
+    }
 }

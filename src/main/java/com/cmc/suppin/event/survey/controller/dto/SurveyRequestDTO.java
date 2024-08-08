@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class SurveyRequestDTO {
@@ -92,5 +93,26 @@ public class SurveyRequestDTO {
                 private Long questionOptionId;
             }
         }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class RandomSelectionRequestDTO {
+        @NotNull
+        private Long surveyId;
+        @NotNull
+        private Long questionId;
+        @NotNull
+        private Integer winnerCount;
+        @NotNull
+        private LocalDateTime startDate;
+        @NotNull
+        private LocalDateTime endDate;
+        @NotNull
+        private Integer minLength;
+        @NotNull
+        private List<String> keywords;
     }
 }
