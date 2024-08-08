@@ -14,6 +14,15 @@ public class SurveyResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    public static class SurveyCreateResponse {
+        private Long surveyId;
+        private String uuid;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class SurveyResultDTO {
         private Long eventId;
         private String eventTitle;

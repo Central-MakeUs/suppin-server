@@ -38,6 +38,7 @@ public class Survey extends BaseDateTimeEntity {
     @Column(columnDefinition = "TEXT")
     private String url;
 
+    @Column(nullable = false, updatable = false, unique = true)
     private String uuid;
 }
 

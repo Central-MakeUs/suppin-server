@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,7 +39,7 @@ public class SurveyService {
     private final EventRepository eventRepository;
 
     @Transactional
-    public Long createSurvey(SurveyRequestDTO.SurveyCreateDTO request, String userId) {
+    public SurveyResponseDTO.SurveyCreateResponse createSurvey(SurveyRequestDTO.SurveyCreateDTO request, String userId) {
         // 사용자 식별
         Member member = memberRepository.findByUserIdAndStatusNot(userId, UserStatus.DELETED)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found"));
@@ -48,19 +49,20 @@ public class SurveyService {
                 .orElseThrow(() -> new IllegalArgumentException("Event not found or does not belong to the user"));
 
         // Survey 엔티티 생성 및 저장
-        Survey survey = SurveyConverter.toSurveyEntity(event);
-        Survey savedSurvey = surveyRepository.save(survey);
+        String uuid = UUID.randomUUID().toString();
+        Survey survey = SurveyConverter.toSurveyEntity(event, uuid);
+        surveyRepository.save(survey);
 
         // 각 개인정보 항목 처리 및 저장
         if (request.getPersonalInfoOptionList() != null && !request.getPersonalInfoOptionList().isEmpty()) {
             List<PersonalInfoCollectOption> personalInfoOptions = SurveyConverter.toPersonalInfoCollectOptionEntities(
-                    request.getPersonalInfoOptionList().stream().map(SurveyRequestDTO.SurveyCreateDTO.PersonalInfoOptionDTO::getOptionName).collect(Collectors.toList()), savedSurvey);
+                    request.getPersonalInfoOptionList().stream().map(SurveyRequestDTO.SurveyCreateDTO.PersonalInfoOptionDTO::getOptionName).collect(Collectors.toList()), survey);
             personalInfoCollectOptionRepository.saveAll(personalInfoOptions);
         }
 
         // 각 질문 처리 및 저장
         for (SurveyRequestDTO.SurveyCreateDTO.QuestionDTO questionDTO : request.getQuestionList()) {
-            Question question = SurveyConverter.toQuestionEntity(questionDTO, savedSurvey);
+            Question question = SurveyConverter.toQuestionEntity(questionDTO, survey);
             questionRepository.save(question);
 
             // 객관식 복수 선택 질문인 경우 처리 및 저장
@@ -70,7 +72,10 @@ public class SurveyService {
             }
         }
 
-        return savedSurvey.getId(); // 저장된 설문의 ID 반환
+        return SurveyResponseDTO.SurveyCreateResponse.builder()
+                .surveyId(survey.getId())
+                .uuid(survey.getUuid())
+                .build();
     }
 
     @Transactional(readOnly = true)

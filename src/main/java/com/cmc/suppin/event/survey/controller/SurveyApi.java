@@ -27,9 +27,9 @@ public class SurveyApi {
 
     @PostMapping("/create")
     @Operation(summary = "설문지 생성 API", description = "QuestionType(Enum): SUBJECTIVE(주관식), SINGLE_CHOICE(객관식(단일 선택)), MULTIPLE_CHOICE(객관식(복수 선택))")
-    public ResponseEntity<ApiResponse<Long>> createSurvey(@RequestBody @Valid SurveyRequestDTO.SurveyCreateDTO request, @CurrentAccount Account account) {
-        Long surveyId = surveyService.createSurvey(request, account.userId());
-        return ResponseEntity.ok(ApiResponse.of(surveyId));
+    public ResponseEntity<ApiResponse<SurveyResponseDTO.SurveyCreateResponse>> createSurvey(@RequestBody @Valid SurveyRequestDTO.SurveyCreateDTO request, @CurrentAccount Account account) {
+        SurveyResponseDTO.SurveyCreateResponse response = surveyService.createSurvey(request, account.userId());
+        return ResponseEntity.ok(ApiResponse.of(response));
     }
 
     @GetMapping("/{surveyId}")
