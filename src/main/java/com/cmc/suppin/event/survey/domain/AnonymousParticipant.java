@@ -1,6 +1,5 @@
-package com.cmc.suppin.answer.domain;
+package com.cmc.suppin.event.survey.domain;
 
-import com.cmc.suppin.event.survey.domain.Survey;
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,7 +33,7 @@ public class AnonymousParticipant extends BaseDateTimeEntity {
 
     private String email;
 
-    @Column(columnDefinition = "VARCHAR(20)", nullable = false)
+    @Column(columnDefinition = "VARCHAR(20)")
     private String phoneNumber;
 
     @Column(nullable = false)

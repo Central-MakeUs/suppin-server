@@ -1,6 +1,6 @@
-package com.cmc.suppin.answer.domain.repository;
+package com.cmc.suppin.event.survey.domain.repository;
 
-import com.cmc.suppin.answer.domain.Answer;
+import com.cmc.suppin.event.survey.domain.Answer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AnswerRepository extends JpaRepository<Answer, Long> {

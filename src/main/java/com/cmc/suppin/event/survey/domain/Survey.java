@@ -1,6 +1,5 @@
 package com.cmc.suppin.event.survey.domain;
 
-import com.cmc.suppin.answer.domain.AnonymousParticipant;
 import com.cmc.suppin.event.events.domain.Event;
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
 import jakarta.persistence.*;

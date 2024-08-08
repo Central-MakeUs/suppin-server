@@ -1,6 +1,5 @@
-package com.cmc.suppin.answer.domain;
+package com.cmc.suppin.event.survey.domain;
 
-import com.cmc.suppin.event.survey.domain.QuestionOption;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
