@@ -1,6 +1,5 @@
-package com.cmc.suppin.answer.domain;
+package com.cmc.suppin.event.survey.domain;
 
-import com.cmc.suppin.event.survey.domain.Question;
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,7 +32,7 @@ public class Answer extends BaseDateTimeEntity {
     @OneToMany(mappedBy = "answer")
     private List<AnswerOption> answerOptionList = new ArrayList<>();
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String answerText;
 
 }

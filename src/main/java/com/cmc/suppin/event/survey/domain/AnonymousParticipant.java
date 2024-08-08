@@ -1,6 +1,5 @@
-package com.cmc.suppin.answer.domain;
+package com.cmc.suppin.event.survey.domain;
 
-import com.cmc.suppin.event.survey.domain.Survey;
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,12 +24,28 @@ public class AnonymousParticipant extends BaseDateTimeEntity {
     @JoinColumn(name = "survey_id")
     private Survey survey;
 
-    @Column(columnDefinition = "VARCHAR(13)", nullable = false)
+    @OneToMany(mappedBy = "anonymousParticipant")
+    private List<Answer> answerList = new ArrayList<>();
+
+    private String name;
+
+    private String address;
+
+    private String email;
+
+    private String instagramId;
+
+    @Column(columnDefinition = "VARCHAR(20)", unique = true)
     private String phoneNumber;
 
     @Column(nullable = false)
     private Boolean isAgreed;
 
-    @OneToMany(mappedBy = "anonymousParticipant")
-    private List<Answer> answerList = new ArrayList<>();
+    private Boolean isWinner;
+
+    private Boolean isChecked;
+
+    public void setIsWinner(Boolean isWinner) {
+        this.isWinner = isWinner;
+    }
 }

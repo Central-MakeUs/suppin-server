@@ -1,6 +1,5 @@
 package com.cmc.suppin.event.survey.domain;
 
-import com.cmc.suppin.answer.domain.AnonymousParticipant;
 import com.cmc.suppin.event.events.domain.Event;
 import com.cmc.suppin.global.domain.BaseDateTimeEntity;
 import jakarta.persistence.*;
@@ -26,11 +25,19 @@ public class Survey extends BaseDateTimeEntity {
     @JoinColumn(name = "event_id")
     private Event event;
 
+    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PersonalInfoCollectOption> personalInfoList = new ArrayList<>();
+
     @OneToMany(mappedBy = "survey")
     private List<Question> questionList = new ArrayList<>();
 
     @OneToMany(mappedBy = "survey")
     private List<AnonymousParticipant> anonymousParticipantList = new ArrayList<>();
 
+    @Column(columnDefinition = "TEXT")
+    private String url;
+
+    @Column(nullable = false, updatable = false, unique = true)
+    private String uuid;
 }
 

@@ -1,6 +1,5 @@
 package com.cmc.suppin.event.survey.domain;
 
-import com.cmc.suppin.answer.domain.Answer;
 import com.cmc.suppin.global.enums.QuestionType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,7 +17,8 @@ import java.util.List;
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long questionId;
+    @Column(name = "question_id")
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "survey_id")
