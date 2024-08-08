@@ -3,10 +3,7 @@ package com.cmc.suppin.event.survey.converter;
 import com.cmc.suppin.event.events.domain.Event;
 import com.cmc.suppin.event.survey.controller.dto.SurveyRequestDTO;
 import com.cmc.suppin.event.survey.controller.dto.SurveyResponseDTO;
-import com.cmc.suppin.event.survey.domain.PersonalInfoCollectOption;
-import com.cmc.suppin.event.survey.domain.Question;
-import com.cmc.suppin.event.survey.domain.QuestionOption;
-import com.cmc.suppin.event.survey.domain.Survey;
+import com.cmc.suppin.event.survey.domain.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,6 +69,32 @@ public class SurveyConverter {
                 .announcementDate(event.getAnnouncementDate().toString())
                 .personalInfoOptions(personalInfoOptions)
                 .questions(questions)
+                .build();
+    }
+
+    public static AnonymousParticipant toAnonymousParticipant(SurveyRequestDTO.SurveyAnswerDTO.ParticipantDTO dto, Survey survey) {
+        return AnonymousParticipant.builder()
+                .survey(survey)
+                .name(dto.getName())
+                .address(dto.getAddress())
+                .email(dto.getEmail())
+                .phoneNumber(dto.getPhoneNumber())
+                .isAgreed(dto.getIsAgreed())
+                .build();
+    }
+
+    public static Answer toAnswer(SurveyRequestDTO.SurveyAnswerDTO.AnswerDTO dto, Question question, AnonymousParticipant participant) {
+        return Answer.builder()
+                .question(question)
+                .anonymousParticipant(participant)
+                .answerText(dto.getAnswerText() != null ? dto.getAnswerText() : "")
+                .build();
+    }
+
+    public static AnswerOption toAnswerOption(SurveyRequestDTO.SurveyAnswerDTO.AnswerDTO.AnswerOptionDTO dto, Answer answer, QuestionOption questionOption) {
+        return AnswerOption.builder()
+                .answer(answer)
+                .questionOption(questionOption)
                 .build();
     }
 }

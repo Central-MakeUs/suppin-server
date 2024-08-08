@@ -32,7 +32,7 @@ public class Answer extends BaseDateTimeEntity {
     @OneToMany(mappedBy = "answer")
     private List<AnswerOption> answerOptionList = new ArrayList<>();
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String answerText;
 
 }

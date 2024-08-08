@@ -33,7 +33,9 @@ public class AnonymousParticipant extends BaseDateTimeEntity {
 
     private String email;
 
-    @Column(columnDefinition = "VARCHAR(20)")
+    private String instagramId;
+
+    @Column(columnDefinition = "VARCHAR(20)", unique = true)
     private String phoneNumber;
 
     @Column(nullable = false)
@@ -42,5 +44,4 @@ public class AnonymousParticipant extends BaseDateTimeEntity {
     private Boolean isWinner;
 
     private Boolean isChecked;
-
 }

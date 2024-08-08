@@ -4,6 +4,7 @@ import com.cmc.suppin.event.survey.controller.dto.SurveyRequestDTO;
 import com.cmc.suppin.event.survey.controller.dto.SurveyResponseDTO;
 import com.cmc.suppin.event.survey.service.SurveyService;
 import com.cmc.suppin.global.response.ApiResponse;
+import com.cmc.suppin.global.response.ResponseCode;
 import com.cmc.suppin.global.security.reslover.Account;
 import com.cmc.suppin.global.security.reslover.CurrentAccount;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,5 +39,12 @@ public class SurveyApi {
     public ResponseEntity<ApiResponse<SurveyResponseDTO.SurveyResultDTO>> getSurvey(@PathVariable Long surveyId) {
         SurveyResponseDTO.SurveyResultDTO response = surveyService.getSurvey(surveyId);
         return ResponseEntity.ok(ApiResponse.of(response));
+    }
+
+    @PostMapping("/reply")
+    @Operation(summary = "설문 답변 등록 API")
+    public ResponseEntity<ApiResponse<Void>> saveSurveyAnswers(@RequestBody @Valid SurveyRequestDTO.SurveyAnswerDTO request) {
+        surveyService.saveSurveyAnswers(request);
+        return ResponseEntity.ok(ApiResponse.of(ResponseCode.SUCCESS));
     }
 }

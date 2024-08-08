@@ -1,6 +1,7 @@
 package com.cmc.suppin.event.survey.controller.dto;
 
 import com.cmc.suppin.global.enums.QuestionType;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.List;
 
 public class SurveyRequestDTO {
 
+    // 설문 생성 요청 DTO
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -41,6 +43,54 @@ public class SurveyRequestDTO {
         public static class PersonalInfoOptionDTO {
             @NotBlank(message = "개인정보 수집 항목을 입력해주세요")
             private String optionName;
+        }
+    }
+
+    // 설문 답변 요청 DTO
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class SurveyAnswerDTO {
+        @NotNull
+        private Long surveyId;
+        @Valid
+        private ParticipantDTO participant;
+        @Valid
+        private List<AnswerDTO> answers;
+
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        public static class ParticipantDTO {
+            private String name;
+            private String address;
+            private String email;
+            private String phoneNumber;
+            private String instagramId;
+            @NotNull
+            private Boolean isAgreed;
+        }
+
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        public static class AnswerDTO {
+            @NotNull
+            private Long questionId;
+            private String answerText;
+            private List<AnswerOptionDTO> answerOptions;
+
+            @Getter
+            @NoArgsConstructor
+            @AllArgsConstructor
+            @Builder
+            public static class AnswerOptionDTO {
+                @NotNull
+                private Long questionOptionId;
+            }
         }
     }
 }

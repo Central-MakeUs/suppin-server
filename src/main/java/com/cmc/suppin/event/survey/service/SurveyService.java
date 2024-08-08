@@ -5,14 +5,8 @@ import com.cmc.suppin.event.events.domain.repository.EventRepository;
 import com.cmc.suppin.event.survey.controller.dto.SurveyRequestDTO;
 import com.cmc.suppin.event.survey.controller.dto.SurveyResponseDTO;
 import com.cmc.suppin.event.survey.converter.SurveyConverter;
-import com.cmc.suppin.event.survey.domain.PersonalInfoCollectOption;
-import com.cmc.suppin.event.survey.domain.Question;
-import com.cmc.suppin.event.survey.domain.QuestionOption;
-import com.cmc.suppin.event.survey.domain.Survey;
-import com.cmc.suppin.event.survey.domain.repository.PersonalInfoCollectOptionRepository;
-import com.cmc.suppin.event.survey.domain.repository.QuestionOptionRepository;
-import com.cmc.suppin.event.survey.domain.repository.QuestionRepository;
-import com.cmc.suppin.event.survey.domain.repository.SurveyRepository;
+import com.cmc.suppin.event.survey.domain.*;
+import com.cmc.suppin.event.survey.domain.repository.*;
 import com.cmc.suppin.global.enums.UserStatus;
 import com.cmc.suppin.member.domain.Member;
 import com.cmc.suppin.member.domain.repository.MemberRepository;
@@ -37,6 +31,9 @@ public class SurveyService {
     private final QuestionOptionRepository questionOptionRepository;
     private final PersonalInfoCollectOptionRepository personalInfoCollectOptionRepository;
     private final EventRepository eventRepository;
+    private final AnonymousParticipantRepository anonymousParticipantRepository;
+    private final AnswerRepository answerRepository;
+    private final AnswerOptionRepository answerOptionRepository;
 
     @Transactional
     public SurveyResponseDTO.SurveyCreateResponse createSurvey(SurveyRequestDTO.SurveyCreateDTO request, String userId) {
@@ -78,6 +75,7 @@ public class SurveyService {
                 .build();
     }
 
+    // 생성된 설문지 조회
     @Transactional(readOnly = true)
     public SurveyResponseDTO.SurveyResultDTO getSurvey(Long surveyId) {
         Survey survey = surveyRepository.findById(surveyId)
@@ -85,5 +83,33 @@ public class SurveyService {
 
         Event event = survey.getEvent();
         return SurveyConverter.toSurveyResultDTO(survey, event);
+    }
+
+    // 설문 응답 저장
+    @Transactional
+    public void saveSurveyAnswers(SurveyRequestDTO.SurveyAnswerDTO request) {
+        Survey survey = surveyRepository.findById(request.getSurveyId())
+                .orElseThrow(() -> new IllegalArgumentException("Survey not found"));
+
+        AnonymousParticipant participant = SurveyConverter.toAnonymousParticipant(request.getParticipant(), survey);
+        anonymousParticipantRepository.save(participant);
+
+        for (SurveyRequestDTO.SurveyAnswerDTO.AnswerDTO answerDTO : request.getAnswers()) {
+            Question question = questionRepository.findById(answerDTO.getQuestionId())
+                    .orElseThrow(() -> new IllegalArgumentException("Question not found"));
+
+            Answer answer = SurveyConverter.toAnswer(answerDTO, question, participant);
+            answerRepository.save(answer);
+
+            if (answerDTO.getAnswerOptions() != null) {
+                for (SurveyRequestDTO.SurveyAnswerDTO.AnswerDTO.AnswerOptionDTO optionDTO : answerDTO.getAnswerOptions()) {
+                    QuestionOption questionOption = questionOptionRepository.findById(optionDTO.getQuestionOptionId())
+                            .orElseThrow(() -> new IllegalArgumentException("QuestionOption not found"));
+
+                    AnswerOption answerOption = SurveyConverter.toAnswerOption(optionDTO, answer, questionOption);
+                    answerOptionRepository.save(answerOption);
+                }
+            }
+        }
     }
 }
