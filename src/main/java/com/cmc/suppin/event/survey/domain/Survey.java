@@ -26,11 +26,16 @@ public class Survey extends BaseDateTimeEntity {
     @JoinColumn(name = "event_id")
     private Event event;
 
+
     @OneToMany(mappedBy = "survey")
     private List<Question> questionList = new ArrayList<>();
 
     @OneToMany(mappedBy = "survey")
     private List<AnonymousParticipant> anonymousParticipantList = new ArrayList<>();
 
+    @Column(columnDefinition = "TEXT")
+    private String url;
+
+    private String uuid;
 }
 
